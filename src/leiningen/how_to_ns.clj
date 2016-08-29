@@ -1,5 +1,12 @@
 (ns leiningen.how-to-ns)
 
+(def default-opts
+  {:require-docstring? false
+   :sort-clauses? true
+   :allow-refer-all? true
+   :allow-extra-clauses? false
+   :align-clauses? true})
+
 (defn parse-ns-args
   [[sym & more]]
   (let [[doc more] (if (string? (first more))
@@ -28,8 +35,12 @@
          print)
     (print \")))
 
+(defn align-left
+  [str length]
+  (format (format "%%-%ds" length) str))
+
 (defn print-ns-form
-  [ns-args]
+  [ns-args opts]
   (let [{:keys [ns doc refer-clojure require import extra]}
         (parse-ns-args ns-args)]
     (printf "(ns %s" ns)
@@ -42,7 +53,7 @@
     (doseq [[name expr] [["require" require]
                          ["import" import]]
             :when expr
-            :let [clauses (sort (rest expr))]
+            :let [clauses (rest expr)]
             :when (seq clauses)]
 
       (printf "\n  (:%s\n" name)
@@ -50,26 +61,58 @@
                                    (map first)
                                    (map str)
                                    (map count)
-                                   (apply max))]
+                                   (apply max))
+            clauses (cond->> clauses
+                      (:sort-clauses? opts)
+                      (sort-by #(if (coll? %) (vec %) %))
+                      (:align-clauses? opts)
+                      (map (fn [clause]
+                             (if (and (coll? clause)
+                                      (symbol? (first clause))
+                                      (seq (rest clause)))
+                               ;; make a symbol with whitespace just for funsies
+                               (let [new-sym (symbol (align-left (first clause)
+                                                                 name-field-length))]
+                                 (if (vector? clause)
+                                   (assoc clause 0 new-sym)
+                                   (cons new-sym (rest clause))))
+                               clause))))]
         (doseq [clause (butlast clauses)]
           (print "   ")
-          ;; TODO: align?
           (prn clause))
-        (pr (last require))
-        (println ")")))
+        (print "   ")
+        (pr (last clauses))
+        (print ")")))
     (print \))))
 
 (defn valid-ns-args?
-  [ns-args]
+  [ns-args opts]
   (and (symbol? (first ns-args))
        (let [{:keys [ns doc refer-clojure require import extra]}
              (parse-ns-args ns-args)]
-         (and (empty? extra)
-              #_ doc ;; uncomment to require docstrings
-
-              ))))
+         (and (or (:allow-extra-clauses? opts)
+                  (empty? extra))
+              (or (not (:require-docstring? opts))
+                   doc)))))
 
 (defn how-to-ns
   "I don't do a lot."
   [project & args]
   (println "Hi!"))
+
+
+(comment
+
+  (print-ns-form
+   '(thomas
+     "here's my docistr
+  I can put whatever I want
+  ini it"
+     (:refer-clojure :exclude [what])
+     (:require [clojure.core :as core]
+               [thomas.whatsit]
+               [and.this.is-longer-.than-that :refer [no]])
+     (:import (java.util List)
+              (java.util.concurrent TimeUnit)))
+   default-opts)
+  )
