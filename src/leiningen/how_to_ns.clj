@@ -1,4 +1,7 @@
-(ns leiningen.how-to-ns)
+(ns leiningen.how-to-ns
+  (:require [leiningen.cljfmt :as cljfmt]
+            [leiningen.cljfmt.diff :as diff]
+            [leiningen.core.main :as main]))
 
 (def default-opts
   {:require-docstring? false
@@ -7,13 +10,13 @@
    :allow-extra-clauses? false
    :align-clauses? true})
 
-(defn parse-ns-args
-  [[sym & more]]
+(defn parse-ns-form
+  [[_ns-sym ns-name-sym & more]]
   (let [[doc more] (if (string? (first more))
                      [(first more) (rest more)]
                      [nil more])
         things (group-by #(and (seq? %) (first %)) more)]
-    {:ns sym
+    {:ns ns-name-sym
      :doc doc
      :refer-clojure (first (things :refer-clojure))
      :require (first (things :require))
@@ -40,9 +43,9 @@
   (format (format "%%-%ds" length) str))
 
 (defn print-ns-form
-  [ns-args opts]
+  [ns-form opts]
   (let [{:keys [ns doc refer-clojure require import extra]}
-        (parse-ns-args ns-args)]
+        (parse-ns-form ns-form)]
     (printf "(ns %s" ns)
     (when doc
       (print "\n  ")
@@ -85,20 +88,79 @@
         (print ")")))
     (print \))))
 
-(defn valid-ns-args?
-  [ns-args opts]
-  (and (symbol? (first ns-args))
+(defn valid-ns-form?
+  [ns-form opts]
+  (and (= 'ns (first ns-form))
+       (symbol? (second ns-form))
        (let [{:keys [ns doc refer-clojure require import extra]}
-             (parse-ns-args ns-args)]
+             (parse-ns-form ns-form)]
          (and (or (:allow-extra-clauses? opts)
                   (empty? extra))
               (or (not (:require-docstring? opts))
                    doc)))))
 
+(defn slurp-ns-from-string
+  [s]
+  ;; cribbed from clojure.repl/source-fn
+  (with-open [rdr (java.io.StringReader. s)]
+    (let [text (StringBuilder.)
+          pbr (proxy [java.io.PushbackReader] [rdr]
+                (read [] (let [i (proxy-super read)]
+                           (.append text (char i))
+                           i)))]
+      (if (= :unknown *read-eval*)
+        (throw (IllegalStateException. "Unable to read source while *read-eval* is :unknown."))
+        (read {} (java.io.PushbackReader. pbr)))
+      (str text))))
+
+(defn check
+  [project files]
+  (->> files
+       (map (fn [file]
+              (let [relative-path (cljfmt/project-path project file)]
+                (try
+                  (let [ns-str (slurp-ns-from-string (slurp file))
+                        formatted (with-out-str
+                                    (print-ns-form (read-string ns-str) default-opts))]
+                    (if (= ns-str formatted)
+                      0
+                      (do
+                        (binding [*out* *err*]
+                          (println "Bad ns format:")
+                          (println (diff/unified-diff
+                                    relative-path
+                                    ns-str
+                                    formatted)))
+                        1)))
+                  (catch Exception e
+                    (binding [*out* *err*]
+                      (println "Exception in how-to-ns when checking" relative-path)
+                      (prn e))
+                    1)))))
+       (reduce +)
+       (main/exit)))
+
+(defn fix
+  [files]
+  (println 'what))
+
+(defn all-files
+  [project]
+  ;; TODO: paste from lein-cljfmt?
+  (->> (cljfmt/format-paths project)
+       (mapcat #(cljfmt/find-files project %))))
+
+(def help
+  "HOW TO NS!")
+
 (defn how-to-ns
   "I don't do a lot."
   [project & args]
-  (println "Hi!"))
+  (let [all-files (all-files project)]
+    (case (first args)
+      "check" (check project all-files)
+      "fix"   (fix project all-files)
+      (println help))))
 
 
 (comment
