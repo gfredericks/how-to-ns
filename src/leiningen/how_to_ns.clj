@@ -42,6 +42,30 @@
   [str length]
   (format (format "%%-%ds" length) str))
 
+(defn normalize-require
+  "Returns a collection of clauses."
+  [require-clause]
+  (let [require-clause (if (symbol? require-clause)
+                         [require-clause]
+                         require-clause)
+        clauses (if (or (coll? (second require-clause))
+                        (symbol? (second require-clause)))
+                  (for [x (rest require-clause)]
+                    (if (symbol? x)
+                      [(symbol (str (first require-clause) \. x))]
+                      (vec (cons (symbol (str (first require-clause) \. (first x)))
+                                 (rest x)))))
+                  [require-clause])]
+    (for [clause clauses
+          :let [[ns-sym & kw-args] clause
+                map-args (apply hash-map kw-args)]]
+      (apply vector ns-sym
+             (apply concat (sort map-args))))))
+
+(defn normalize-import
+  [import-clause]
+  [import-clause])
+
 (defn print-ns-form
   [ns-form opts]
   (let [{:keys [ns doc refer-clojure require import extra]}
@@ -54,10 +78,12 @@
     (when refer-clojure
       (print "\n  ")
       (pr refer-clojure))
-    (doseq [[name expr] [["require" require]
-                         ["import" import]]
+    (doseq [[name expr normalize-fn]
+            [["require" require normalize-require]
+             ["import" import normalize-import]]
+
             :when expr
-            :let [clauses (rest expr)]
+            :let [clauses (mapcat normalize-fn (rest expr))]
             :when (seq clauses)]
 
       (printf "\n  (:%s\n" name)
@@ -74,7 +100,8 @@
                              (if (and (coll? clause)
                                       (symbol? (first clause))
                                       (seq (rest clause)))
-                               ;; make a symbol with whitespace just for funsies
+                               ;; make a symbol with whitespace just
+                               ;; because it's cute
                                (let [new-sym (symbol (align-left (first clause)
                                                                  name-field-length))]
                                  (if (vector? clause)
@@ -166,20 +193,3 @@
       "check" (check project all-files)
       "fix"   (fix project all-files)
       (println help))))
-
-
-(comment
-
-  (print-ns-form
-   '(thomas
-     "here's my docistr
-  I can put whatever I want
-  ini it"
-     (:refer-clojure :exclude [what])
-     (:require [clojure.core :as core]
-               [thomas.whatsit]
-               [and.this.is-longer-.than-that :refer [no]])
-     (:import (java.util List)
-              (java.util.concurrent TimeUnit)))
-   default-opts)
-  )
