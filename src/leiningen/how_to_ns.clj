@@ -67,7 +67,7 @@
                                    (apply max))
             clauses (cond->> clauses
                       (:sort-clauses? opts)
-                      (sort-by #(if (coll? %) (vec %) %))
+                      (sort-by #(if (coll? %) (first %) %))
                       (:align-clauses? opts)
                       (map (fn [clause]
                              (if (and (coll? clause)
@@ -113,6 +113,11 @@
         (read {} (java.io.PushbackReader. pbr)))
       (str text))))
 
+(defn reformat-ns-str
+  [ns-str opts]
+  (with-out-str
+    (print-ns-form (read-string ns-str) opts)))
+
 (defn check
   [project files]
   (->> files
@@ -120,8 +125,7 @@
               (let [relative-path (cljfmt/project-path project file)]
                 (try
                   (let [ns-str (slurp-ns-from-string (slurp file))
-                        formatted (with-out-str
-                                    (print-ns-form (read-string ns-str) default-opts))]
+                        formatted (reformat-ns-str ns-str default-opts)]
                     (if (= ns-str formatted)
                       0
                       (do
