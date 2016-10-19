@@ -42,6 +42,22 @@
   [str length]
   (format (format "%%-%ds" length) str))
 
+(defn join-symbols
+  [& parts]
+  (->> parts
+       (clojure.string/join \.)
+       (symbol)))
+
+(defn split-symbol
+  [sym]
+  (let [parts (clojure.string/split (str sym) #"\.")]
+    [(some->> parts
+              (butlast)
+              (seq)
+              (clojure.string/join \.)
+              (symbol))
+     (symbol (last parts))]))
+
 (defn normalize-require
   "Returns a collection of clauses."
   [require-clause]
@@ -52,8 +68,8 @@
                         (symbol? (second require-clause)))
                   (for [x (rest require-clause)]
                     (if (symbol? x)
-                      [(symbol (str (first require-clause) \. x))]
-                      (vec (cons (symbol (str (first require-clause) \. (first x)))
+                      [(join-symbols (first require-clause) x)]
+                      (vec (cons (join-symbols (first require-clause) (first x))
                                  (rest x)))))
                   [require-clause])]
     (for [clause clauses
@@ -62,9 +78,21 @@
       (apply vector ns-sym
              (apply concat (sort map-args))))))
 
-(defn normalize-import
-  [import-clause]
-  [import-clause])
+(defn normalize-imports
+  [import-clauses]
+  (let [all-classes (mapcat (fn [import-clause]
+                              (if (symbol? import-clause)
+                                [import-clause]
+                                (for [sym (rest import-clause)]
+                                  (symbol (str (first import-clause) \. sym)))))
+                            import-clauses)]
+    (->> all-classes
+         (map split-symbol)
+         (group-by first)
+         (sort)
+         (map (fn [[package sym-pairs]]
+                (apply list package
+                       (map second sym-pairs)))))))
 
 (defn print-ns-form
   [ns-form opts]
@@ -79,11 +107,11 @@
       (print "\n  ")
       (pr refer-clojure))
     (doseq [[name expr normalize-fn]
-            [["require" require normalize-require]
-             ["import" import normalize-import]]
+            [["require" require #(mapcat normalize-require %)]
+             ["import" import normalize-imports]]
 
             :when expr
-            :let [clauses (mapcat normalize-fn (rest expr))]
+            :let [clauses (normalize-fn (rest expr))]
             :when (seq clauses)]
 
       (printf "\n  (:%s\n" name)

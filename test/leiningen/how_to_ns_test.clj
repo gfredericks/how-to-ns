@@ -55,4 +55,9 @@
    clj-time.core))"
     (->opts)
 
+    ;; import using square brackets
+    "(ns thomas.disney
+  (:import
+   [java.util Date]))"
+    (->opts)
     ))
