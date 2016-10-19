@@ -45,7 +45,8 @@
 (defn print-ns-form
   [ns-form opts]
   (let [{:keys [ns doc refer-clojure require import extra]}
-        (parse-ns-form ns-form)]
+        (parse-ns-form ns-form)
+        doc (or doc (if (:require-docstring? opts) "Honorary docstring."))]
     (printf "(ns %s" ns)
     (when doc
       (print "\n  ")
