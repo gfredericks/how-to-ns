@@ -148,33 +148,41 @@
 
 (defn check
   [project files]
-  (->> files
-       (map (fn [file]
-              (let [relative-path (cljfmt/project-path project file)]
-                (try
-                  (let [ns-str (slurp-ns-from-string (slurp file))
-                        formatted (reformat-ns-str ns-str default-opts)]
-                    (if (= ns-str formatted)
-                      0
-                      (do
-                        (binding [*out* *err*]
-                          (println "Bad ns format:")
-                          (println (diff/unified-diff
-                                    relative-path
-                                    ns-str
-                                    formatted)))
-                        1)))
-                  (catch Exception e
-                    (binding [*out* *err*]
-                      (println "Exception in how-to-ns when checking" relative-path)
-                      (prn e))
-                    1)))))
-       (reduce +)
-       (main/exit)))
+  (let [opts (merge default-opts (:how-to-ns project))]
+    (->> files
+         (map (fn [file]
+                (let [relative-path (cljfmt/project-path project file)]
+                  (try
+                    (let [ns-str (slurp-ns-from-string (slurp file))
+                          formatted (reformat-ns-str ns-str opts)]
+                      (if (= ns-str formatted)
+                        0
+                        (do
+                          (binding [*out* *err*]
+                            (println "Bad ns format:")
+                            (println (diff/unified-diff
+                                      relative-path
+                                      ns-str
+                                      formatted)))
+                          1)))
+                    (catch Exception e
+                      (binding [*out* *err*]
+                        (println "Exception in how-to-ns when checking" relative-path)
+                        (prn e))
+                      1)))))
+         (reduce +)
+         (main/exit))))
 
 (defn fix
-  [files]
-  (println 'what))
+  [project files]
+  (let [opts (merge default-opts (:how-to-ns project))]
+    (doseq [file files
+            :let [file-contents (slurp file)
+                  ns-str (slurp-ns-from-string file-contents)
+                  formatted (reformat-ns-str ns-str opts)]
+            :when (not= ns-str formatted)]
+      (println "Fixing" (cljfmt/project-path project file))
+      (spit file (str formatted (subs file-contents (count ns-str)))))))
 
 (defn all-files
   [project]
