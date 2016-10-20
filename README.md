@@ -1,25 +1,50 @@
 # how-to-ns
 
-A Leiningen plugin to do many wonderful things.
+how-to-ns is a Clojure linter (as a Leiningen plugin) for
+[Stuart Sierra's how-to-ns standard](https://stuartsierra.com/2016/clojure-how-to-ns.html).
+
+So far it is somewhat hacky and only has the particular features that
+I want.
+
+## Obtention
+
+Add `[com.gfredericks/how-to-ns "0.1.0"]` to the `:plugins` vector
+of your project.clj or `:user` profile.
 
 ## Usage
 
-FIXME: Use this for user-level plugins:
+To lint the ns forms, printing diffs wherever there are problems:
+```
+lein how-to-ns check
+```
 
-Put `[how-to-ns "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your `:user`
-profile.
+To fix the ns forms that don't pass the linter:
+```
+lein how-to-ns fix
+```
 
-FIXME: Use this for project-level plugins:
+## Customization
 
-Put `[how-to-ns "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your project.clj.
+Add a `:how-to-ns` entry (to `project.clj` or th `:user` profile) with
+any of the following options:
 
-FIXME: and add an example usage that actually makes sense:
+``` clojure
+{:require-docstring?      true
+ :sort-clauses?           true
+ :allow-refer-all?        false
+ :allow-extra-clauses?    false
+ :align-clauses?          false
+ :import-square-brackets? false}
+```
 
-    $ lein how-to-ns
+## Things it doesn't do until somebody makes it do them
+
+- preserve comments or any other irregular whitespace
+- support cljc
 
 ## License
 
-Copyright © 2016 FIXME
+Copyright © 2016 Gary Fredericks
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
