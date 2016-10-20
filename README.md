@@ -8,7 +8,7 @@ I want.
 
 ## Obtention
 
-Add `[com.gfredericks/how-to-ns "0.1.1"]` to the `:plugins` vector
+Add `[com.gfredericks/how-to-ns "0.1.2"]` to the `:plugins` vector
 of your project.clj or `:user` profile.
 
 ## Usage
