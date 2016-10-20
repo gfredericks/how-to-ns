@@ -1,4 +1,5 @@
 (ns leiningen.how-to-ns
+  "Lint clojure ns forms."
   (:require [leiningen.cljfmt :as cljfmt]
             [leiningen.cljfmt.diff :as diff]
             [leiningen.core.main :as main]))
@@ -248,13 +249,20 @@
        (mapcat #(cljfmt/find-files project %))))
 
 (def help
-  "HOW TO NS!")
+  "USAGE: lein how-to-ns [check | fix]")
 
 (defn how-to-ns
-  "I don't do a lot."
+  "Lint clojure ns forms.
+
+USAGE:
+
+  lein how-to-ns check # prints ns formatting problems
+  lein how-to-ns fix   # corrects ns formatting problems"
   [project & args]
   (let [all-files (all-files project)]
     (case (first args)
       "check" (check project all-files)
       "fix"   (fix project all-files)
-      (println help))))
+      (do
+        (println help)
+        (main/exit 1)))))
