@@ -25,7 +25,7 @@ lein how-to-ns fix
 
 ## Customization
 
-Add a `:how-to-ns` entry (to `project.clj` or th `:user` profile) with
+Add a `:how-to-ns` entry (to `project.clj` or the `:user` profile) with
 any of the following options:
 
 ``` clojure
