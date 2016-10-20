@@ -248,7 +248,7 @@
   (->> (cljfmt/format-paths project)
        (mapcat #(cljfmt/find-files project %))))
 
-(def help
+(def usage
   "USAGE: lein how-to-ns [check | fix]")
 
 (defn how-to-ns
@@ -264,5 +264,5 @@ USAGE:
       "check" (check project all-files)
       "fix"   (fix project all-files)
       (do
-        (println help)
+        (println usage)
         (main/exit 1)))))
