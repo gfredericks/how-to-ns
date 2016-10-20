@@ -125,7 +125,7 @@
   [ns-form opts]
   (let [{:keys [ns doc refer-clojure require import extra]}
         (parse-ns-form ns-form)
-        doc (or doc (if (:require-docstring? opts) "Honorary docstring."))]
+        doc (or doc (if (:require-docstring? opts) "Perfunctory docstring."))]
     (printf "(ns %s" ns)
     (when doc
       (print "\n  ")
