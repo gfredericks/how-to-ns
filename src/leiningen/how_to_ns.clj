@@ -4,11 +4,12 @@
             [leiningen.core.main :as main]))
 
 (def default-opts
-  {:require-docstring? false
+  {:require-docstring? true
    :sort-clauses? true
-   :allow-refer-all? true
+   :allow-refer-all? false
    :allow-extra-clauses? false
-   :align-clauses? true})
+   :align-clauses? false
+   :import-square-brackets? false})
 
 (defn parse-ns-form
   [[_ns-sym ns-name-sym & more]]
@@ -58,9 +59,15 @@
               (symbol))
      (symbol (last parts))]))
 
+(defn update-when
+  [m k f & args]
+  (if (contains? m k)
+    (apply update m k f args)
+    m))
+
 (defn normalize-require
   "Returns a collection of clauses."
-  [require-clause]
+  [require-clause opts]
   (let [require-clause (if (symbol? require-clause)
                          [require-clause]
                          require-clause)
@@ -74,12 +81,20 @@
                   [require-clause])]
     (for [clause clauses
           :let [[ns-sym & kw-args] clause
-                map-args (apply hash-map kw-args)]]
+                map-args (-> (apply hash-map kw-args)
+                             (dissoc :rename)
+                             (cond-> (not (:allow-refer-all? opts))
+                               (update-when :refer #(if (= :all %) '[???] %)))
+                             (update-when :refer
+                                          (fn [arg]
+                                            (if (coll? arg)
+                                              (vec (sort arg))
+                                              arg))))]]
       (apply vector ns-sym
              (apply concat (sort map-args))))))
 
 (defn normalize-imports
-  [import-clauses]
+  [import-clauses opts]
   (let [all-classes (mapcat (fn [import-clause]
                               (if (symbol? import-clause)
                                 [import-clause]
@@ -91,8 +106,20 @@
          (group-by first)
          (sort)
          (map (fn [[package sym-pairs]]
-                (apply list package
+                (apply (if (:import-square-brackets? opts)
+                         vector
+                         list)
+                       package
                        (map second sym-pairs)))))))
+
+(defn normalize-refer-clojure
+  [refer-clojure-expr]
+  (let [args (apply hash-map (rest refer-clojure-expr))]
+    (cons :refer-clojure
+          (-> args
+              (update-when :exclude (comp vec sort))
+              (update-when :only (comp vec sort))
+              (->> (apply concat))))))
 
 (defn print-ns-form
   [ns-form opts]
@@ -105,10 +132,12 @@
       (print-string-with-line-breaks doc))
     (when refer-clojure
       (print "\n  ")
-      (pr refer-clojure))
+      (pr (normalize-refer-clojure refer-clojure)))
     (doseq [[name expr normalize-fn]
-            [["require" require #(mapcat normalize-require %)]
-             ["import" import normalize-imports]]
+            [["require" require (fn [clauses]
+                                  (mapcat #(normalize-require % opts)
+                                          clauses))]
+             ["import" import #(normalize-imports % opts)]]
 
             :when expr
             :let [clauses (normalize-fn (rest expr))]

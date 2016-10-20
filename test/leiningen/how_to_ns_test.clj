@@ -13,13 +13,13 @@
     how-to-ns/default-opts))
 
 (deftest it-works
-  (are [ns-str opts] (correctly-formatted? ns-str opts)
-    "(ns thomas)" (->opts)
-    "(ns thomas
-  \"here's my
-  docstring\")" (->opts)
+  (are [goodbad opts ns-str]
+      ((case goodbad :good identity :bad not)
+       (correctly-formatted? ns-str opts))
 
-"(ns com.example.my-application.server
+    :good ; stu's example
+    (->opts)
+    "(ns com.example.my-application.server
   \"Example application HTTP server and routing.\"
   (:refer-clojure :exclude [send])
   (:require
@@ -32,32 +32,179 @@
   (:import
    (java.nio.file Files LinkOption)
    (org.apache.commons.io FileUtils)))"
-(->opts :align-clauses? false))
 
-  (are [ns-str opts] (not (correctly-formatted? ns-str opts))
-    ;; total garbage
-    "(ns thomas thomas)" (->opts)
+    :good ; simplest
+    (->opts :require-docstring? false)
+    "(ns thomas)"
 
-    ;; needs docstring
-    "(ns thomas)" (->opts :require-docstring? true)
-
-    ;; clauses in wrong order
+    :good ; with a required docstring
+    (->opts)
     "(ns thomas
+  \"here's my
+  docstring\")"
+
+    :bad ; total garbage
+    (->opts)
+    "(ns thomas thomas)"
+
+    :bad ; needs docstring
+    (->opts)
+    "(ns thomas)"
+
+    :bad ; clauses in wrong order
+    (->opts)
+    "(ns thomas
+  \"docstring\"
   (:import
    (java.util Random))
   (:require
    [clj-time.core]))"
-    (->opts)
 
-    ;; unparenthesized clauses
+    :bad ; unparenthesized clauses
+    (->opts)
     "(ns thomas.disney
+  \"docstring\"
   (:require
    clj-time.core))"
-    (->opts)
 
-    ;; import using square brackets
+    :bad ; import using square brackets
+    (->opts)
     "(ns thomas.disney
+  \"docstring\"
   (:import
    [java.util Date]))"
+
+    :good ; import using square brackets when allowed
+    (->opts :import-square-brackets? true)
+    "(ns thomas.disney
+  \"docstring\"
+  (:import
+   [java.util Date]))"
+
+    :bad ; requires using parentheses
     (->opts)
-    ))
+    "(ns thomas
+  \"docstring\"
+  (:require
+   (clojure.data.xml)))"
+
+    :good ; :refer [not all]
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test :refer [not-all]]))"
+
+    :bad ; :refer :all
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test :refer :all]))"
+
+    :good ; :refer :all when allowed
+    (->opts :allow-refer-all? true)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test :refer :all]))"
+
+    :bad ; two requires
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test])
+  (:require
+   [clojure.data.xml]))"
+
+    :bad ; renames
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test :refer [is] :rename {is isn't}]))"
+
+    :bad ; use
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:use [clojure.test]))"
+
+    :bad ; require instead of :require
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (require [clojure.test]))"
+
+    :good ; refer with square brackets
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test :refer [is test]]))"
+
+    :bad ; refer with parentheses
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test :refer (is test)]))"
+
+    :bad ; refer unsorted
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test :refer [test is]]))"
+
+    :good ; sorted requires
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.data.xml]
+   [clojure.test]))"
+
+    :bad ; unsorted requires
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test]
+   [clojure.data.xml]))"
+
+    :good ; sorted imports
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:import
+   (java.io InputStream)
+   (java.util Random)))"
+
+    :bad ; unsorted imports
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:import
+   (java.util Random)
+   (java.io InputStream)))"
+
+    :good ; sorted exclude
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:refer-clojure :exclude [and or]))"
+
+    :bad ; unsorted exclude
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:refer-clojure :exclude [or and]))"
+
+    :bad ; as/refer out of order
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test :refer [is] :as test]))"))
