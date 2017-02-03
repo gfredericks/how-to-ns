@@ -23,6 +23,7 @@
      :refer-clojure (first (things :refer-clojure))
      :require (first (things :require))
      :import (first (things :import))
+     :gen-class (first (things :gen-class))
      :extra (concat (->> (select-keys things [:refer-clojure :require :import])
                          (vals)
                          (mapcat rest))
@@ -124,10 +125,25 @@
 
 (defn print-ns-form
   [ns-form opts]
-  (let [{:keys [ns doc refer-clojure require import extra]}
+  (let [{:keys [ns doc refer-clojure require import gen-class extra]}
         (parse-ns-form ns-form)
-        doc (or doc (if (:require-docstring? opts) "Perfunctory docstring."))]
-    (printf "(ns %s" ns)
+        doc (or doc (if (:require-docstring? opts) "Perfunctory docstring."))
+        ns-meta (meta ns)
+        ns-meta-str (if ns-meta
+                      (if (every? true? (vals ns-meta))
+                        (->> (keys ns-meta)
+                             (sort)
+                             (map #(str \^ % \space))
+                             (apply str))
+                        (str "^{"
+                             (->> ns-meta
+                                  sort
+                                  (map #(str (pr-str (key %)) " " (pr-str (val %))))
+                                  (clojure.string/join ", "))
+                             "} ")
+                        )
+                      "")]
+    (printf "(ns %s%s" ns-meta-str ns)
     (when doc
       (print "\n  ")
       (print-string-with-line-breaks doc))
@@ -172,6 +188,9 @@
         (print "   ")
         (pr (last clauses))
         (print ")")))
+    (when gen-class
+      (print "\n  ")
+      (pr gen-class))
     (print \))))
 
 (defn valid-ns-form?

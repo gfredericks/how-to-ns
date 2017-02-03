@@ -207,4 +207,29 @@
     "(ns thomas
   \"docstring\"
   (:require
-   [clojure.test :refer [is] :as test]))"))
+   [clojure.test :refer [is] :as test]))"
+
+    ;;
+    ;; ns metadata support
+    ;;
+    :good
+    (->opts)
+    "(ns ^:bar ^:foo thomas
+  \"docstring\")"
+
+    :good
+    (->opts)
+    "(ns ^{:bar 12, :foo 18} thomas
+  \"docstring\")"
+
+    ;;
+    ;; :gen-class support
+    ;;
+    :good
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test])
+  (:gen-class))"
+    ))
