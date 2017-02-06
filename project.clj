@@ -1,4 +1,4 @@
-(defproject com.gfredericks/how-to-ns "0.1.4-SNAPSHOT"
+(defproject com.gfredericks/how-to-ns "0.1.4"
   :description "A Clojure linter for Stuart Sierra's how-to-ns standard"
   :url "https://github.com/gfredericks/how-to-ns"
   :license {:name "Eclipse Public License"
