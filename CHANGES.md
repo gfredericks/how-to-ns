@@ -1,5 +1,9 @@
 # how-to-ns changelog
 
+## 0.1.4 2017-02-06
+
+Add support for `:gen-class` and ns metadata.
+
 ## 0.1.3 2016-10-20
 
 Fix `lein help how-to-ns` bug.
