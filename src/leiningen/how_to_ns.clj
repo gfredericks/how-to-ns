@@ -223,6 +223,11 @@
   (with-out-str
     (print-ns-form (read-string ns-str) opts)))
 
+(defn exit
+  [status]
+  (when-not (zero? status)
+    (main/exit status)))
+
 (defn check
   [project files]
   (let [opts (merge default-opts (:how-to-ns project))]
@@ -248,7 +253,7 @@
                         (prn e))
                       1)))))
          (reduce +)
-         (main/exit))))
+         (exit))))
 
 (defn fix
   [project files]
