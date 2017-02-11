@@ -1,5 +1,9 @@
 # how-to-ns changelog
 
+## 0.1.5 2017-02-11
+
+Bugfix: Don't exit the jvm on successful checks.
+
 ## 0.1.4 2017-02-06
 
 Add support for `:gen-class` and ns metadata.
