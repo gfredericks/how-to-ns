@@ -273,7 +273,7 @@
        (mapcat #(cljfmt/find-files project %))))
 
 (def usage
-  "USAGE: lein how-to-ns [check | fix]")
+  "USAGE: lein how-to-ns <check|fix>")
 
 (defn how-to-ns
   "Lint clojure ns forms.
