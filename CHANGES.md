@@ -1,5 +1,9 @@
 # how-to-ns changelog
 
+## 0.1.6 2017-05-10
+
+Clarified docstring.
+
 ## 0.1.5 2017-02-11
 
 Bugfix: Don't exit the jvm on successful checks.
