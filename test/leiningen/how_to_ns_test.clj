@@ -232,4 +232,14 @@
   (:require
    [clojure.test])
   (:gen-class))"
+
+    ;;
+    ;; :require-macros support
+    ;;
+    :good
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require-macros
+   [clojure.test]))"
     ))

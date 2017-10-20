@@ -22,12 +22,13 @@
      :doc doc
      :refer-clojure (first (things :refer-clojure))
      :require (first (things :require))
+     :require-macros (first (things :require-macros))
      :import (first (things :import))
      :gen-class (first (things :gen-class))
-     :extra (concat (->> (select-keys things [:refer-clojure :require :import])
+     :extra (concat (->> (select-keys things [:refer-clojure :require :require-macros :import])
                          (vals)
                          (mapcat rest))
-                    (->> (dissoc things :refer-clojure :require :import)
+                    (->> (dissoc things :refer-clojure :require :require-macros :import)
                          (mapcat vals)))}))
 
 (defn print-string-with-line-breaks
@@ -125,7 +126,7 @@
 
 (defn print-ns-form
   [ns-form opts]
-  (let [{:keys [ns doc refer-clojure require import gen-class extra]}
+  (let [{:keys [ns doc refer-clojure require require-macros import gen-class extra]}
         (parse-ns-form ns-form)
         doc (or doc (if (:require-docstring? opts) "Perfunctory docstring."))
         ns-meta (meta ns)
@@ -154,6 +155,9 @@
             [["require" require (fn [clauses]
                                   (mapcat #(normalize-require % opts)
                                           clauses))]
+             ["require-macros" require-macros (fn [clauses]
+                                                (mapcat #(normalize-require % opts)
+                                                        clauses))]
              ["import" import #(normalize-imports % opts)]]
 
             :when expr
