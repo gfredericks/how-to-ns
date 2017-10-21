@@ -1,5 +1,9 @@
 # how-to-ns changelog
 
+## 0.1.7 2017-12-21
+
+[Adds support for :require-macros](https://github.com/gfredericks/how-to-ns/issues/4#issuecomment-338344766).
+
 ## 0.1.6 2017-05-10
 
 Clarified docstring.
