@@ -4,7 +4,7 @@ how-to-ns is a Clojure linter (as a Leiningen plugin) for
 [Stuart Sierra's how-to-ns standard](https://stuartsierra.com/2016/clojure-how-to-ns.html).
 
 So far it is somewhat hacky and only has the particular features that
-I want.
+I want or that haven't been difficult to add.
 
 ## Obtention
 
