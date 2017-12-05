@@ -109,6 +109,20 @@
   (:require
    [clojure.test :refer :all]))"
 
+    :bad ; :rename
+    (->opts)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test :refer [deftest] :rename {deftest tefdest}]))"
+
+    :good ; :allow-rename?
+    (->opts :allow-rename? true)
+    "(ns thomas
+  \"docstring\"
+  (:require
+   [clojure.test :refer [deftest] :rename {deftest tefdest}]))"
+
     :bad ; two requires
     (->opts)
     "(ns thomas

@@ -32,6 +32,7 @@ any of the following options:
 {:require-docstring?      true
  :sort-clauses?           true
  :allow-refer-all?        false
+ :allow-rename?           false
  :allow-extra-clauses?    false
  :align-clauses?          false
  :import-square-brackets? false}

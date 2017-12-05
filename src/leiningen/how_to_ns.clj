@@ -5,11 +5,12 @@
             [leiningen.core.main :as main]))
 
 (def default-opts
-  {:require-docstring? true
-   :sort-clauses? true
-   :allow-refer-all? false
-   :allow-extra-clauses? false
-   :align-clauses? false
+  {:require-docstring?      true
+   :sort-clauses?           true
+   :allow-refer-all?        false
+   :allow-extra-clauses?    false
+   :allow-rename?           false
+   :align-clauses?          false
    :import-square-brackets? false})
 
 (defn parse-ns-form
@@ -85,7 +86,8 @@
     (for [clause clauses
           :let [[ns-sym & kw-args] clause
                 map-args (-> (apply hash-map kw-args)
-                             (dissoc :rename)
+                             (cond-> (not (:allow-rename? opts))
+                               (dissoc :rename))
                              (cond-> (not (:allow-refer-all? opts))
                                (update-when :refer #(if (= :all %) '[???] %)))
                              (update-when :refer
