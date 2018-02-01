@@ -42,6 +42,9 @@ any of the following options:
 
 - preserve comments or any other irregular whitespace
 - support cljc
+  - clojure's reader supports this via `{:read-cond :preserve}`, but we would also
+    need to know what formatting to target, especially since a conditional can show
+    up at any level
 
 ## License
 
