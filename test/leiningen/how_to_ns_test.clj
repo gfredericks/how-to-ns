@@ -1,6 +1,6 @@
 (ns leiningen.how-to-ns-test
   (:require [clojure.test :refer :all]
-            [leiningen.how-to-ns :as how-to-ns]))
+            [com.gfredericks.how-to-ns :as how-to-ns]))
 
 (defn correctly-formatted?
   [ns-str opts]
