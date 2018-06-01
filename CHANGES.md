@@ -1,5 +1,11 @@
 # how-to-ns changelog
 
+## 0.1.9 2018-05-31
+
+Move the implementation to the `com.gfredericks.how-to-ns` namespace,
+beginning to separate the core functionality from the leiningen plugin
+([#7](https://github.com/gfredericks/how-to-ns/pull/7)).
+
 ## 0.1.8 2017-12-05
 
 [Adds opt-in support for :rename](https://github.com/gfredericks/how-to-ns/issues/5).
