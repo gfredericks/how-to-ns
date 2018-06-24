@@ -1,7 +1,5 @@
 (ns com.gfredericks.how-to-ns
-  "Lint clojure ns forms."
-  (:require [leiningen.cljfmt :as cljfmt]
-            [leiningen.cljfmt.diff :as diff]))
+  "Lint clojure ns forms.")
 
 (def default-opts
   {:require-docstring?      true
@@ -220,57 +218,40 @@
                            i)))]
       (if (= :unknown *read-eval*)
         (throw (IllegalStateException. "Unable to read source while *read-eval* is :unknown."))
-        (read {} (java.io.PushbackReader. pbr)))
+        (try
+          (read {} (java.io.PushbackReader. pbr))
+          (catch Exception e
+            (throw (IllegalArgumentException. "Unreadable ns string!" e)))))
       (str text))))
 
-(defn reformat-ns-str
+(defn ^:deprecated reformat-ns-str
+  "DEPRECATED: Use format-ns-str."
   [ns-str opts]
   (with-out-str
     (print-ns-form (read-string ns-str) opts)))
 
-(defn check
-  [project files]
-  (let [opts (merge default-opts (:how-to-ns project))]
-    (->> files
-         (map (fn [file]
-                (let [relative-path (cljfmt/project-path project file)]
-                  (try
-                    (let [ns-str (slurp-ns-from-string (slurp file))
-                          formatted (reformat-ns-str ns-str opts)]
-                      (if (= ns-str formatted)
-                        0
-                        (do
-                          (binding [*out* *err*]
-                            (println "Bad ns format:")
-                            (println (diff/unified-diff
-                                      relative-path
-                                      ns-str
-                                      formatted)))
-                          1)))
-                    (catch Exception e
-                      (binding [*out* *err*]
-                        (println "Exception in how-to-ns when checking" relative-path)
-                        (prn e))
-                      1)))))
-         (reduce +))))
+(defn format-ns-str
+  "Returns a formatted version of ns-str, according to opts."
+  [ns-str opts]
+  (let [opts (merge default-opts opts)]
+    (reformat-ns-str ns-str opts)))
 
-(defn fix
-  [project files]
-  (let [opts (merge default-opts (:how-to-ns project))]
-    (doseq [file files
-            :let [file-contents (slurp file)
-                  ns-str (slurp-ns-from-string file-contents)
-                  formatted (reformat-ns-str ns-str opts)]
-            :when (not= ns-str formatted)]
-      (println "Fixing" (cljfmt/project-path project file))
-      (spit file (str formatted (subs file-contents (count ns-str)))))))
+(defn good-ns-str?
+  "Returns true if the given string matches the return value from
+  format-ns-str."
+  [ns-str opts]
+  (= ns-str (format-ns-str ns-str opts)))
 
-(defn all-files
-  [project]
-  ;; TODO: paste from lein-cljfmt?
-  (->> (cljfmt/format-paths project)
-       (mapcat #(cljfmt/find-files project %))))
+(defn starts-with-good-ns-str?
+  "Returns true if the given string begins with an ns form for which
+  good-ns-str? returns true."
+  [file-str opts]
+  (good-ns-str? (slurp-ns-from-string file-str) opts))
 
-(def usage
-  "USAGE: lein how-to-ns <check|fix>")
-
+(defn format-initial-ns-str
+  "Returns a variant of the given string with the initial ns form
+  formatted according to format-ns-str."
+  [file-str opts]
+  (let [ns-str (slurp-ns-from-string file-str)
+        ns-str' (format-ns-str ns-str opts)]
+    (str ns-str' (subs file-str (count ns-str)))))

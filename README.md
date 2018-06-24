@@ -8,10 +8,13 @@ I want or that haven't been difficult to add.
 
 ## Obtention
 
+**NOTE!** As of version `0.2.*`, how-to-ns has been split into the
+library `how-to-ns` and the leiningen plugin `lein-how-to-ns`.
+
 Add `[com.gfredericks/how-to-ns "0.1.9"]` to the `:plugins` vector
 of your project.clj or `:user` profile.
 
-## Usage
+## Leiningen Usage
 
 To lint the ns forms, printing diffs wherever there are problems:
 ```
@@ -23,10 +26,23 @@ To fix the ns forms that don't pass the linter:
 lein how-to-ns fix
 ```
 
+## Library Usage
+
+``` clojure
+(require '[com.gfredericks.how-to-ns :as how-to-ns])
+
+;; see below for description of opts
+(how-to-ns/good-ns-str?               ns-str opts)
+(how-to-ns/format-ns-str              ns-str opts)
+(how-to-ns/starts-with-good-ns-str? file-str opts)
+(how-to-ns/format-initial-ns-str    file-str opts)
+```
+
 ## Customization
 
-Add a `:how-to-ns` entry (to `project.clj` or the `:user` profile) with
-any of the following options:
+Either via the `opts` param in the library or a `:how-to-ns` entry in
+your `project.clj` or `:user` profile for the lein plugin, the
+following options are available, shown here with their default values:
 
 ``` clojure
 {:require-docstring?      true
