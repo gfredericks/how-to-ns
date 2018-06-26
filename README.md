@@ -61,6 +61,7 @@ following options are available, shown here with their default values:
   - clojure's reader supports this via `{:read-cond :preserve}`, but we would also
     need to know what formatting to target, especially since a conditional can show
     up at any level
+    - one idea is to only allow them as direct children of the `:require`/etc forms
 
 ## License
 
