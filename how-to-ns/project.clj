@@ -5,6 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies []
   :deploy-repositories [["releases" :clojars]]
+  :vcs :git
   :profiles
   {:provided
    {:dependencies [[org.clojure/clojure "1.9.0"]]}
