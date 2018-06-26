@@ -3,7 +3,7 @@
   :url "https://github.com/gfredericks/how-to-ns"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies []
+  :dependencies [[com.googlecode.java-diff-utils/diffutils "1.2.1"]]
   :deploy-repositories [["releases" :clojars]]
   :vcs :git
   :profiles
