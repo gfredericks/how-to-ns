@@ -1,5 +1,15 @@
 # how-to-ns changelog
 
+## 0.2.1 2018-06-26
+
+Split into library (`com.gfredericks.how-to-ns`) and lein plugin
+(`com.gfredericks.lein-how-to-ns`).
+
+Added four new functions to the `com.gfredericks.how-to-ns` namespace,
+and a `com.gfredericks.how-to-ns.main` namespace which has some path
+searching functionality used by the plugin, and can have a proper CLI
+in the future.
+
 ## 0.1.9 2018-05-31
 
 Move the implementation to the `com.gfredericks.how-to-ns` namespace,
