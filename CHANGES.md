@@ -1,5 +1,9 @@
 # how-to-ns changelog
 
+## 0.2.2 2018-06-27
+
+Added better error reporting for unreadable forms, etc.
+
 ## 0.2.1 2018-06-26
 
 Split into library (`com.gfredericks.how-to-ns`) and lein plugin
