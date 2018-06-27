@@ -35,6 +35,22 @@
        (mapcat #(file-seq (File. %)))
        (filter #(.isFile %))))
 
+(defn ^:private report-file-specific-exception
+  [file e]
+  (binding [*out* *err*]
+    (if (and (instance? IllegalArgumentException e)
+             (= "Unreadable ns string!" (.getMessage e)))
+      (do
+        (printf "ERROR: Unreadable ns form in %s!\n  %s\n"
+                (str file)
+                ;; shouldn't be possible for the cause
+                ;; to be nil, but just in case...
+                (some-> e .getCause .getMessage pr-str))
+        (flush))
+      (do
+        (println "Exception in how-to-ns when checking" (str file))
+        (prn e)))))
+
 (defn check
   [paths opts]
   (->> (all-files paths)
@@ -53,19 +69,26 @@
                                   formatted)))
                       1)))
                 (catch Exception e
-                  (binding [*out* *err*]
-                    (println "Exception in how-to-ns when checking" file)
-                    (prn e))
+                  (report-file-specific-exception file e)
                   1))))
        (reduce +)))
 
 (defn fix
   [paths opts]
-  (doseq [file (all-files paths)
-          :let [contents (slurp file)
-                formatted (how-to-ns/format-initial-ns-str contents opts)]
-          :when (not= contents formatted)]
-    (println "Fixing" (str file))
-    (spit file formatted)))
+  (doseq [file (all-files paths)]
+    (try
+      (let [contents (slurp file)
+            formatted (how-to-ns/format-initial-ns-str contents opts)]
+        (when (not= contents formatted)
+          (println "Fixing" (str file))
+          (spit file formatted)))
+      (catch Exception e
+        (report-file-specific-exception file e)
+        ;; not sure whether it's better for fix to throw exceptions or
+        ;; report problems in the return value (because under normal
+        ;; conditions users won't need to look at the return value);
+        ;; in any case this is more conservative to start with. It can
+        ;; be revisited when writing -main.
+        (throw e)))))
 
 ;; TODO: write a useful -main
