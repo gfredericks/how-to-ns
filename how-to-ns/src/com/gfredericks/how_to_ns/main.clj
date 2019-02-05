@@ -29,11 +29,12 @@
              (DiffUtils/diff (lines original) (lines revised))
              context))))
 
-(defn ^:private all-files
+(defn ^:private all-clojure-files
   [paths]
   (->> paths
        (mapcat #(file-seq (File. %)))
-       (filter #(.isFile %))))
+       (filter #(.isFile %))
+       (filter #(re-matches #".*\.clj[sc]?" (.getName %)))))
 
 (defn ^:private report-file-specific-exception
   [file e]
@@ -53,7 +54,7 @@
 
 (defn check
   [paths opts]
-  (->> (all-files paths)
+  (->> (all-clojure-files paths)
        (map (fn [file]
               (try
                 (let [contents (slurp file)
@@ -75,7 +76,7 @@
 
 (defn fix
   [paths opts]
-  (doseq [file (all-files paths)]
+  (doseq [file (all-clojure-files paths)]
     (try
       (let [contents (slurp file)
             formatted (how-to-ns/format-initial-ns-str contents opts)]

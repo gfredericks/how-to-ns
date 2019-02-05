@@ -48,3 +48,17 @@
       (finally
         (.delete f)
         (Files/delete d)))))
+
+(deftest non-clojure-files
+  (let [d (Files/createTempDirectory "how-to-ns-tests" (make-array FileAttribute 0))
+        f (File. (str d) "not-a-clojure-file.sql")]
+    (try
+      (spit f unreadable-code)
+      (testing "check"
+        (let [[ret err] (with-err-str
+                        (how-to-ns-main/check [(str d)] {}))]
+          (is (= "" err))
+          (is (= 0 ret))))
+      (finally
+        (.delete f)
+        (Files/delete d)))))
