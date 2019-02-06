@@ -7,6 +7,8 @@
    [difflib DiffUtils Delta$TYPE]
    (java.io File)))
 
+(set! *warn-on-reflection* true)
+
 ;; next three functions pasted from cljfmt
 (defn ^:private lines
   [s]
@@ -32,12 +34,12 @@
 (defn ^:private all-clojure-files
   [paths]
   (->> paths
-       (mapcat #(file-seq (File. %)))
-       (filter #(.isFile %))
-       (filter #(re-matches #".*\.clj[sc]?" (.getName %)))))
+       (mapcat #(file-seq (File. ^String %)))
+       (filter #(.isFile ^File %))
+       (filter #(re-matches #".*\.clj[sc]?" (.getName ^File %)))))
 
 (defn ^:private report-file-specific-exception
-  [file e]
+  [file ^Exception e]
   (binding [*out* *err*]
     (if (and (instance? IllegalArgumentException e)
              (= "Unreadable ns string!" (.getMessage e)))

@@ -1,5 +1,9 @@
 (ns com.gfredericks.how-to-ns
-  "Lint clojure ns forms.")
+  "Lint clojure ns forms."
+  (:import
+   (java.io PushbackReader StringReader)))
+
+(set! *warn-on-reflection* true)
 
 (def default-opts
   {:require-docstring?      true
@@ -210,16 +214,20 @@
 (defn slurp-ns-from-string
   [s]
   ;; cribbed from clojure.repl/source-fn
-  (with-open [rdr (java.io.StringReader. s)]
+  (with-open [rdr (StringReader. s)]
     (let [text (StringBuilder.)
-          pbr (proxy [java.io.PushbackReader] [rdr]
-                (read [] (let [i (proxy-super read)]
+          pbr (proxy [PushbackReader] [rdr]
+                ;; the this this here is apparently the only
+                ;; way to type-hint a proxy-super call to
+                ;; avoid reflection
+                (read [] (let [^PushbackReader this this
+                               i (proxy-super read)]
                            (.append text (char i))
                            i)))]
       (if (= :unknown *read-eval*)
         (throw (IllegalStateException. "Unable to read source while *read-eval* is :unknown."))
         (try
-          (read {} (java.io.PushbackReader. pbr))
+          (read {} (PushbackReader. pbr))
           (catch Exception e
             (throw (IllegalArgumentException. "Unreadable ns string!" e)))))
       (str text))))
