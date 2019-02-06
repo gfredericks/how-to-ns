@@ -1,5 +1,10 @@
 # how-to-ns changelog
 
+## 0.2.3 2019-02-06
+
+- Ignore non-clojure files ([#8](https://github.com/gfredericks/how-to-ns/issues/8))
+- Eliminate all reflection
+
 ## 0.2.2 2018-06-27
 
 Added better error reporting for unreadable forms, etc.
