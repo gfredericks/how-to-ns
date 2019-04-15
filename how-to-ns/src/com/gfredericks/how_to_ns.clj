@@ -99,24 +99,41 @@
       (apply vector ns-sym
              (apply concat (sort map-args))))))
 
+(defn maybe-normalize-require [require-clause opts]
+  (if (reader-conditional? require-clause)
+    [require-clause]
+    (normalize-require require-clause opts)))
+
 (defn normalize-imports
   [import-clauses opts]
   (let [all-classes (mapcat (fn [import-clause]
-                              (if (symbol? import-clause)
+                              (cond
+                                (symbol? import-clause)
                                 [import-clause]
+
+                                (reader-conditional? import-clause)
+                                [import-clause]
+                                
+                                :else
                                 (for [sym (rest import-clause)]
                                   (symbol (str (first import-clause) \. sym)))))
                             import-clauses)]
     (->> all-classes
-         (map split-symbol)
+         (map (fn [x]
+                (if (reader-conditional? x)
+                    [x]
+                    (split-symbol x))))
          (group-by first)
-         (sort)
+         (sort-by (fn [[x]]
+                    (str x)))
          (map (fn [[package sym-pairs]]
-                (apply (if (:import-square-brackets? opts)
-                         vector
-                         list)
-                       package
-                       (map second sym-pairs)))))))
+                (if (reader-conditional? package)
+                  package
+                  (apply (if (:import-square-brackets? opts)
+                           vector
+                           list)
+                         package
+                         (map second sym-pairs))))))))
 
 (defn normalize-refer-clojure
   [refer-clojure-expr]
@@ -156,10 +173,10 @@
       (pr (normalize-refer-clojure refer-clojure)))
     (doseq [[name expr normalize-fn]
             [["require" require (fn [clauses]
-                                  (mapcat #(normalize-require % opts)
+                                  (mapcat #(maybe-normalize-require % opts)
                                           clauses))]
              ["require-macros" require-macros (fn [clauses]
-                                                (mapcat #(normalize-require % opts)
+                                                (mapcat #(maybe-normalize-require % opts)
                                                         clauses))]
              ["import" import #(normalize-imports % opts)]]
 
@@ -169,13 +186,16 @@
 
       (printf "\n  (:%s\n" name)
       (let [name-field-length (->> clauses
+                                   (remove reader-conditional?)
                                    (map first)
                                    (map str)
                                    (map count)
-                                   (apply max))
+                                   (apply max 0))
             clauses (cond->> clauses
                       (:sort-clauses? opts)
-                      (sort-by #(if (coll? %) (first %) %))
+                      (sort-by #(cond
+                                  (coll? %) (-> % first str)
+                                  :else (str %)))
                       (:align-clauses? opts)
                       (map (fn [clause]
                              (if (and (coll? clause)
@@ -227,7 +247,7 @@
       (if (= :unknown *read-eval*)
         (throw (IllegalStateException. "Unable to read source while *read-eval* is :unknown."))
         (try
-          (read {} (PushbackReader. pbr))
+          (read {:read-cond :preserve} (PushbackReader. pbr))
           (catch Exception e
             (throw (IllegalArgumentException. "Unreadable ns string!" e)))))
       (str text))))
@@ -236,7 +256,7 @@
   "DEPRECATED: Use format-ns-str."
   [ns-str opts]
   (with-out-str
-    (print-ns-form (read-string ns-str) opts)))
+    (print-ns-form (read-string {:read-cond :preserve} ns-str) opts)))
 
 (defn format-ns-str
   "Returns a formatted version of ns-str, according to opts."
