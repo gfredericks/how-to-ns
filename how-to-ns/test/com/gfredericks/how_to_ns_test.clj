@@ -309,6 +309,28 @@
   (:require-macros
    [clojure.test]))"}])
 
+(deftest requires-processing
+  (testing "`require` clasuses are processed and sorted. npm-style ones are also handled"
+    (are [input expected] (= expected
+                             (how-to-ns/format-ns-str input {:require-docstring? false}))
+      "(ns foo)"
+      "(ns foo)"
+
+      "(ns foo (:require foo))"
+      "(ns foo\n  (:require\n   [foo]))"
+
+      "(ns foo (:require \"foo\"))"
+      "(ns foo\n  (:require\n   [\"foo\"]))"
+
+      "(ns foo (:require [\"foo\"]))"
+      "(ns foo\n  (:require\n   [\"foo\"]))"
+
+      "(ns foo (:require [\"foo\" :as bar]))"
+      "(ns foo\n  (:require\n   [\"foo\" :as bar]))"
+
+      "(ns foo (:require [\"foo\" :as bar] goofy abc))"
+      "(ns foo\n  (:require\n   [abc]\n   [\"foo\" :as bar]\n   [goofy]))")))
+
 (deftest it-works
   (doseq [{:keys [outcome opts ns-str]} test-cases]
     (is ((case outcome :good identity :bad not)

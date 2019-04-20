@@ -73,7 +73,8 @@
 (defn normalize-require
   "Returns a collection of clauses."
   [require-clause opts]
-  (let [require-clause (if (symbol? require-clause)
+  (let [require-clause (if (or (symbol? require-clause)
+                               (string? require-clause))
                          [require-clause]
                          require-clause)
         clauses (if (or (coll? (second require-clause))
@@ -175,7 +176,7 @@
                                    (apply max))
             clauses (cond->> clauses
                       (:sort-clauses? opts)
-                      (sort-by #(if (coll? %) (first %) %))
+                      (sort-by (comp str #(if (coll? %) (first %) %)))
                       (:align-clauses? opts)
                       (map (fn [clause]
                              (if (and (coll? clause)
