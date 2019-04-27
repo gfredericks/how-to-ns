@@ -309,6 +309,13 @@
   (:require-macros
    [clojure.test]))"}])
 
+(deftest require-sort-criterion
+  (are [input option expected] (= expected
+                                  (sort-by (how-to-ns/require-sort-criterion {:place-string-requires-at-bottom? option})
+                                           input))
+    '(c "b" a) false '(a "b" c)
+    '(c "b" a) true  '(a c "b")))
+
 (deftest requires-processing
   (testing "`require` clasuses are processed and sorted. npm-style ones are also handled"
     (are [input expected] (= expected
@@ -329,7 +336,20 @@
       "(ns foo\n  (:require\n   [\"foo\" :as bar]))"
 
       "(ns foo (:require [\"foo\" :as bar] goofy abc))"
-      "(ns foo\n  (:require\n   [abc]\n   [\"foo\" :as bar]\n   [goofy]))")))
+      "(ns foo\n  (:require\n   [abc]\n   [\"foo\" :as bar]\n   [goofy]))"))
+
+  (testing "`:place-string-requires-at-bottom?` option"
+    (are [option input expected] (= expected
+                                    (how-to-ns/format-ns-str input {:require-docstring? false
+                                                                    :place-string-requires-at-bottom? option}))
+
+      false
+      "(ns foo (:require [\"foo\" :as bar] goofy abc))"
+      "(ns foo\n  (:require\n   [abc]\n   [\"foo\" :as bar]\n   [goofy]))"
+
+      true
+      "(ns foo (:require [\"foo\" :as bar] goofy abc))"
+      "(ns foo\n  (:require\n   [abc]\n   [goofy]\n   [\"foo\" :as bar]))")))
 
 (deftest it-works
   (doseq [{:keys [outcome opts ns-str]} test-cases]

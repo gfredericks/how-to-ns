@@ -49,13 +49,14 @@ your `project.clj` or `:user` profile for the lein plugin, the
 following options are available, shown here with their default values:
 
 ``` clojure
-{:require-docstring?      true
- :sort-clauses?           true
- :allow-refer-all?        false
- :allow-rename?           false
- :allow-extra-clauses?    false
- :align-clauses?          false
- :import-square-brackets? false}
+{:require-docstring?               true
+ :sort-clauses?                    true
+ :allow-refer-all?                 false
+ :allow-rename?                    false
+ :allow-extra-clauses?             false
+ :align-clauses?                   false
+ :import-square-brackets?          false
+ :place-string-requires-at-bottom? false}
 ```
 
 ## Things it doesn't do until somebody makes it do them

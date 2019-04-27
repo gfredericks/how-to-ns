@@ -6,13 +6,14 @@
 (set! *warn-on-reflection* true)
 
 (def default-opts
-  {:require-docstring?      true
-   :sort-clauses?           true
-   :allow-refer-all?        false
-   :allow-extra-clauses?    false
-   :allow-rename?           false
-   :align-clauses?          false
-   :import-square-brackets? false})
+  {:require-docstring?               true
+   :sort-clauses?                    true
+   :allow-refer-all?                 false
+   :allow-extra-clauses?             false
+   :allow-rename?                    false
+   :align-clauses?                   false
+   :import-square-brackets?          false
+   :place-string-requires-at-bottom? false})
 
 (defn parse-ns-form
   [[_ns-sym ns-name-sym & more]]
@@ -128,6 +129,17 @@
               (update-when :only (comp vec sort))
               (->> (apply concat))))))
 
+(defn require-sort-criterion [{:keys [place-string-requires-at-bottom?]}]
+  (fn [x]
+    (let [namespace (if (coll? x)
+                      (first x)
+                      x)
+          criterion (str namespace)]
+      (if (and place-string-requires-at-bottom?
+               (string? namespace))
+        (str "zzzzzz" criterion)
+        criterion))))
+
 (defn print-ns-form
   [ns-form opts]
   (let [{:keys [ns doc refer-clojure require require-macros import gen-class extra]}
@@ -176,7 +188,7 @@
                                    (apply max))
             clauses (cond->> clauses
                       (:sort-clauses? opts)
-                      (sort-by (comp str #(if (coll? %) (first %) %)))
+                      (sort-by (require-sort-criterion opts))
                       (:align-clauses? opts)
                       (map (fn [clause]
                              (if (and (coll? clause)
