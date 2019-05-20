@@ -6,13 +6,14 @@
 (set! *warn-on-reflection* true)
 
 (def default-opts
-  {:require-docstring?      true
-   :sort-clauses?           true
-   :allow-refer-all?        false
-   :allow-extra-clauses?    false
-   :allow-rename?           false
-   :align-clauses?          false
-   :import-square-brackets? false})
+  {:require-docstring?               true
+   :sort-clauses?                    true
+   :allow-refer-all?                 false
+   :allow-extra-clauses?             false
+   :allow-rename?                    false
+   :align-clauses?                   false
+   :import-square-brackets?          false
+   :sort-string-requires-to-end?     false})
 
 (defn parse-ns-form
   [[_ns-sym ns-name-sym & more]]
@@ -73,7 +74,8 @@
 (defn normalize-require
   "Returns a collection of clauses."
   [require-clause opts]
-  (let [require-clause (if (symbol? require-clause)
+  (let [require-clause (if (or (symbol? require-clause)
+                               (string? require-clause))
                          [require-clause]
                          require-clause)
         clauses (if (or (coll? (second require-clause))
@@ -144,6 +146,16 @@
               (update-when :only (comp vec sort))
               (->> (apply concat))))))
 
+(defn require-sort-criterion [{:keys [sort-string-requires-to-end?]}]
+  (fn [x]
+    (let [namespace (if (coll? x)
+                      (first x)
+                      x)
+          criterion (str namespace)]
+      (if sort-string-requires-to-end?
+        [(if (string? namespace) 1 0) criterion]
+        criterion))))
+
 (defn print-ns-form
   [ns-form opts]
   (let [{:keys [ns doc refer-clojure require require-macros import gen-class extra]}
@@ -193,9 +205,7 @@
                                    (apply max 0))
             clauses (cond->> clauses
                       (:sort-clauses? opts)
-                      (sort-by #(cond
-                                  (coll? %) (-> % first str)
-                                  :else (str %)))
+                      (sort-by (require-sort-criterion opts))
                       (:align-clauses? opts)
                       (map (fn [clause]
                              (if (and (coll? clause)
