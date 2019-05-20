@@ -132,7 +132,7 @@
                     (split-symbol x))))
          (group-by first)
          (sort-by (fn [[x]]
-                    (str x)))
+                    (pr-str x)))
          (map (fn [[package sym-pairs]]
                 (if (reader-conditional? package)
                   package
