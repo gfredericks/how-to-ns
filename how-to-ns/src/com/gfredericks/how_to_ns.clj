@@ -120,7 +120,7 @@
                                 
                                 (-> import-clause rest seq)
                                 (for [sym (rest import-clause)]
-                                  (str (pr-str (first import-clause)) \. sym))
+                                  (str (pr-str (first import-clause)) \. (pr-str sym)))
 
                                 :else
                                 [(first import-clause)]))

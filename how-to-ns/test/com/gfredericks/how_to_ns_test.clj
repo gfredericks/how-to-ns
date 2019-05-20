@@ -403,7 +403,10 @@
     "(ns foo\n  (:import\n   #?(:clj foo :cljs bar)))"
 
     "(ns foo (:import (#?(:clj foo :cljs bar) baz)))"
-    "(ns foo\n  (:import\n   (#?(:clj foo :cljs bar) baz)))"))
+    "(ns foo\n  (:import\n   (#?(:clj foo :cljs bar) baz)))"
+
+    "(ns foo (:import (Foo #?(:clj bar :cljs baz) d)))"
+    "(ns foo\n  (:import\n   (Foo #?(:clj bar :cljs baz) d)))"))
 
 (defspec judgment-unaffected-by-arbitrary-contents-following-ns-str 500
   (prop/for-all [{:keys [opts ns-str]} (gen/elements test-cases)
