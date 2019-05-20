@@ -13,7 +13,7 @@
    :allow-rename?                    false
    :align-clauses?                   false
    :import-square-brackets?          false
-   :place-string-requires-at-bottom? false})
+   :sort-string-requires-to-end?     false})
 
 (defn parse-ns-form
   [[_ns-sym ns-name-sym & more]]
@@ -129,13 +129,13 @@
               (update-when :only (comp vec sort))
               (->> (apply concat))))))
 
-(defn require-sort-criterion [{:keys [place-string-requires-at-bottom?]}]
+(defn require-sort-criterion [{:keys [sort-string-requires-to-end?]}]
   (fn [x]
     (let [namespace (if (coll? x)
                       (first x)
                       x)
           criterion (str namespace)]
-      (if (and place-string-requires-at-bottom?
+      (if (and sort-string-requires-to-end?
                (string? namespace))
         (str "zzzzzz" criterion)
         criterion))))

@@ -311,7 +311,7 @@
 
 (deftest require-sort-criterion
   (are [input option expected] (= expected
-                                  (sort-by (how-to-ns/require-sort-criterion {:place-string-requires-at-bottom? option})
+                                  (sort-by (how-to-ns/require-sort-criterion {:sort-string-requires-to-end? option})
                                            input))
     '(c "b" a) false '(a "b" c)
     '(c "b" a) true  '(a c "b")))
@@ -338,10 +338,10 @@
       "(ns foo (:require [\"foo\" :as bar] goofy abc))"
       "(ns foo\n  (:require\n   [abc]\n   [\"foo\" :as bar]\n   [goofy]))"))
 
-  (testing "`:place-string-requires-at-bottom?` option"
+  (testing "`:sort-string-requires-to-end?` option"
     (are [option input expected] (= expected
                                     (how-to-ns/format-ns-str input {:require-docstring? false
-                                                                    :place-string-requires-at-bottom? option}))
+                                                                    :sort-string-requires-to-end? option}))
 
       false
       "(ns foo (:require [\"foo\" :as bar] goofy abc))"
