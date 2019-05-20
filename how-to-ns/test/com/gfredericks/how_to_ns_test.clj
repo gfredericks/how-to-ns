@@ -394,7 +394,16 @@
     "(ns foo\n  (:import\n   #?(:clj foo :cljs bar)\n   #?(:clj baz :cljs quux)))"
 
     "(ns foo (:import #?(:clj foo :cljs bar) (A2 a) #?(:clj baz :cljs quux) (A1 a)))"
-    "(ns foo\n  (:import\n   (A1 a)\n   (A2 a)\n   #?(:clj foo :cljs bar)\n   #?(:clj baz :cljs quux)))"))
+    "(ns foo\n  (:import\n   (A1 a)\n   (A2 a)\n   #?(:clj foo :cljs bar)\n   #?(:clj baz :cljs quux)))"
+     
+    "(ns foo (:import (A)))"
+    "(ns foo\n  (:import\n   (A)))"
+    
+    "(ns foo (:import (#?(:clj foo :cljs bar))))"
+    "(ns foo\n  (:import\n   #?(:clj foo :cljs bar)))"
+
+    "(ns foo (:import (#?(:clj foo :cljs bar) baz)))"
+    "(ns foo\n  (:import\n   (#?(:clj foo :cljs bar) baz)))"))
 
 (defspec judgment-unaffected-by-arbitrary-contents-following-ns-str 500
   (prop/for-all [{:keys [opts ns-str]} (gen/elements test-cases)

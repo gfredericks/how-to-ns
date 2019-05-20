@@ -57,13 +57,15 @@
 
 (defn split-symbol
   [sym]
-  (let [parts (clojure.string/split (str sym) #"\.")]
-    [(some->> parts
-              (butlast)
-              (seq)
-              (clojure.string/join \.)
-              (symbol))
-     (symbol (last parts))]))
+  (if-not (clojure.string/includes? sym ".")
+    [sym]
+    (let [parts (clojure.string/split (str sym) #"\.")]
+      [(some->> parts
+                (butlast)
+                (seq)
+                (clojure.string/join \.)
+                (symbol))
+       (symbol (last parts))])))
 
 (defn update-when
   [m k f & args]
@@ -116,9 +118,12 @@
                                 (reader-conditional? import-clause)
                                 [import-clause]
                                 
-                                :else
+                                (-> import-clause rest seq)
                                 (for [sym (rest import-clause)]
-                                  (symbol (str (first import-clause) \. sym)))))
+                                  (str (pr-str (first import-clause)) \. sym))
+
+                                :else
+                                [(first import-clause)]))
                             import-clauses)]
     (->> all-classes
          (map (fn [x]
@@ -135,7 +140,7 @@
                            vector
                            list)
                          package
-                         (map second sym-pairs))))))))
+                         (keep second sym-pairs))))))))
 
 (defn normalize-refer-clojure
   [refer-clojure-expr]
