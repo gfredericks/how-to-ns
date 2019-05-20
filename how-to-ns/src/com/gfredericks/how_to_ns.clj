@@ -135,9 +135,8 @@
                       (first x)
                       x)
           criterion (str namespace)]
-      (if (and sort-string-requires-to-end?
-               (string? namespace))
-        (str "zzzzzz" criterion)
+      (if sort-string-requires-to-end?
+        [(if (string? namespace) 1 0) criterion]
         criterion))))
 
 (defn print-ns-form
