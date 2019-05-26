@@ -360,6 +360,54 @@
          opts)
         "Accepts its own reformatting.")))
 
+(deftest reformatting
+  (are [input expected] (= expected
+                            (how-to-ns/format-ns-str input {:require-docstring? false}))
+    "(ns foo)"
+    "(ns foo)"
+
+    "(ns foo (:require foo))"
+    "(ns foo\n  (:require\n   [foo]))"
+
+    "(ns foo (:require #?(:clj foo :cljs bar)))"
+    "(ns foo\n  (:require\n   #?(:clj foo :cljs bar)))"
+
+    "(ns foo (:require [#?(:clj foo :cljs bar)]))"
+    "(ns foo\n  (:require\n   [#?(:clj foo :cljs bar)]))"
+
+    "(ns foo (:require #?(:clj foo :cljs bar)#?(:clj baz :cljs quux)))"
+    "(ns foo\n  (:require\n   #?(:clj foo :cljs bar)\n   #?(:clj baz :cljs quux)))"
+
+    "(ns foo (:require [#?(:clj foo :cljs bar)] THING))"
+    "(ns foo\n  (:require\n   [THING]\n   [#?(:clj foo :cljs bar)]))"
+
+    "(ns foo (:require #?(:clj foo :cljs bar) THING #?(:clj baz :cljs quux) OTHER))"
+    "(ns foo\n  (:require\n   [OTHER]\n   [THING]\n   #?(:clj foo :cljs bar)\n   #?(:clj baz :cljs quux)))"
+
+    "(ns foo (:import (A2 a) (A1 b)))"
+    "(ns foo\n  (:import\n   (A1 b)\n   (A2 a)))"
+    
+    "(ns foo (:import #?(:clj foo :cljs bar)))"
+    "(ns foo\n  (:import\n   #?(:clj foo :cljs bar)))"
+
+    "(ns foo (:import #?(:clj foo :cljs bar)#?(:clj baz :cljs quux)))"
+    "(ns foo\n  (:import\n   #?(:clj foo :cljs bar)\n   #?(:clj baz :cljs quux)))"
+
+    "(ns foo (:import #?(:clj foo :cljs bar) (A2 a) #?(:clj baz :cljs quux) (A1 a)))"
+    "(ns foo\n  (:import\n   (A1 a)\n   (A2 a)\n   #?(:clj foo :cljs bar)\n   #?(:clj baz :cljs quux)))"
+     
+    "(ns foo (:import (A)))"
+    "(ns foo\n  (:import\n   (A)))"
+    
+    "(ns foo (:import (#?(:clj foo :cljs bar))))"
+    "(ns foo\n  (:import\n   #?(:clj foo :cljs bar)))"
+
+    "(ns foo (:import (#?(:clj foo :cljs bar) baz)))"
+    "(ns foo\n  (:import\n   (#?(:clj foo :cljs bar) baz)))"
+
+    "(ns foo (:import (Foo #?(:clj bar :cljs baz) d)))"
+    "(ns foo\n  (:import\n   (Foo #?(:clj bar :cljs baz) d)))"))
+
 (defspec judgment-unaffected-by-arbitrary-contents-following-ns-str 500
   (prop/for-all [{:keys [opts ns-str]} (gen/elements test-cases)
                  aftergarbage gen/string]
