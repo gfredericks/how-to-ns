@@ -42,6 +42,11 @@ Maven coordinates: `[com.gfredericks/how-to-ns "0.2.3"]`
 (how-to-ns/format-initial-ns-str    file-str opts)
 ```
 
+## Disclaimer
+
+As of version `0.2.4`, `how-to-ns` has preliminary support for reader
+conditionals, but the exact behavior is subject to change.
+
 ## Customization
 
 Either via the `opts` param in the library or a `:how-to-ns` entry in
