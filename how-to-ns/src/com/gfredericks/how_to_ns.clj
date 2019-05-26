@@ -117,7 +117,7 @@
 
                                 (reader-conditional? import-clause)
                                 [import-clause]
-                                
+
                                 (-> import-clause rest seq)
                                 (for [sym (rest import-clause)]
                                   (str (pr-str (first import-clause)) \. (pr-str sym)))

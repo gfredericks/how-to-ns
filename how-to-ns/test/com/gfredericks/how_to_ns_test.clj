@@ -386,7 +386,7 @@
 
     "(ns foo (:import (A2 a) (A1 b)))"
     "(ns foo\n  (:import\n   (A1 b)\n   (A2 a)))"
-    
+
     "(ns foo (:import #?(:clj foo :cljs bar)))"
     "(ns foo\n  (:import\n   #?(:clj foo :cljs bar)))"
 
@@ -395,10 +395,10 @@
 
     "(ns foo (:import #?(:clj foo :cljs bar) (A2 a) #?(:clj baz :cljs quux) (A1 a)))"
     "(ns foo\n  (:import\n   (A1 a)\n   (A2 a)\n   #?(:clj foo :cljs bar)\n   #?(:clj baz :cljs quux)))"
-     
+
     "(ns foo (:import (A)))"
     "(ns foo\n  (:import\n   (A)))"
-    
+
     "(ns foo (:import (#?(:clj foo :cljs bar))))"
     "(ns foo\n  (:import\n   #?(:clj foo :cljs bar)))"
 
