@@ -1,5 +1,13 @@
 # how-to-ns changelog
 
+## 0.2.5 2019-05-26
+
+(`0.2.4` was misreleased)
+
+- adds support for string requires, as used in clojurescript
+  with npm deps ([#12](https://github.com/gfredericks/how-to-ns/pull/12))
+- adds preliminary support for reader conditionals ([#10](https://github.com/gfredericks/how-to-ns/pull/10))
+
 ## 0.2.3 2019-02-06
 
 - Ignore non-clojure files ([#8](https://github.com/gfredericks/how-to-ns/issues/8))
