@@ -20,7 +20,11 @@
   (let [[doc more] (if (string? (first more))
                      [(first more) (rest more)]
                      [nil more])
-        things (group-by #(and (seq? %) (first %)) more)]
+        things (group-by (fn [x]
+                           (cond
+                             (seq? x) (first x)
+                             (reader-conditional? x) :reader-conditionals))
+                         more)]
     {:ns ns-name-sym
      :doc doc
      :refer-clojure (first (things :refer-clojure))
@@ -32,7 +36,8 @@
                          (vals)
                          (mapcat rest))
                     (->> (dissoc things :refer-clojure :require :require-macros :import)
-                         (mapcat vals)))}))
+                         (mapcat vals)))
+     :reader-conditionals (things :reader-conditionals)}))
 
 (defn print-string-with-line-breaks
   [s]
@@ -163,7 +168,7 @@
 
 (defn print-ns-form
   [ns-form opts]
-  (let [{:keys [ns doc refer-clojure require require-macros import gen-class extra]}
+  (let [{:keys [ns doc refer-clojure require require-macros import reader-conditionals gen-class extra]}
         (parse-ns-form ns-form)
         doc (or doc (if (:require-docstring? opts) "Perfunctory docstring."))
         ns-meta (meta ns)
@@ -230,6 +235,9 @@
         (print "   ")
         (pr (last clauses))
         (print ")")))
+    (doseq [reader-conditional reader-conditionals]
+      (print "\n  ")
+      (pr reader-conditional))
     (when gen-class
       (print "\n  ")
       (pr gen-class))

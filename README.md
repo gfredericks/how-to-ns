@@ -67,11 +67,8 @@ following options are available, shown here with their default values:
 ## Things it doesn't do until somebody makes it do them
 
 - preserve comments or any other irregular whitespace
-- support cljc
-  - clojure's reader supports this via `{:read-cond :preserve}`, but we would also
-    need to know what formatting to target, especially since a conditional can show
-    up at any level
-    - one idea is to only allow them as direct children of the `:require`/etc forms
+- rich support for .cljc
+  - There's some basic/preliminary support for reader conditionals now, although it's not particularly prettified or canonical.
 
 ## License
 
