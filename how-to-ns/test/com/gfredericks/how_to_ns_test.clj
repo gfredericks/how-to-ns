@@ -362,7 +362,7 @@
 
 (deftest reformatting
   (are [input expected] (= expected
-                            (how-to-ns/format-ns-str input {:require-docstring? false}))
+                           (how-to-ns/format-ns-str input {:require-docstring? false}))
     "(ns foo)"
     "(ns foo)"
 
@@ -406,7 +406,10 @@
     "(ns foo\n  (:import\n   (#?(:clj foo :cljs bar) baz)))"
 
     "(ns foo (:import (Foo #?(:clj bar :cljs baz) d)))"
-    "(ns foo\n  (:import\n   (Foo #?(:clj bar :cljs baz) d)))"))
+    "(ns foo\n  (:import\n   (Foo #?(:clj bar :cljs baz) d)))"
+    
+    "(ns foo #?(:clj (:import (A))))"
+    "(ns foo\n  #?(:clj (:import (A))))"))
 
 (defspec judgment-unaffected-by-arbitrary-contents-following-ns-str 500
   (prop/for-all [{:keys [opts ns-str]} (gen/elements test-cases)
