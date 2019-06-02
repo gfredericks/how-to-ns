@@ -1,5 +1,9 @@
 # how-to-ns changelog
 
+## 0.2.6 2019-06-01
+
+- adds support for top-level reader conditionals
+
 ## 0.2.5 2019-05-26
 
 (`0.2.4` was misreleased)
