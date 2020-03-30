@@ -139,6 +139,11 @@
          (sort-by (fn [[x]]
                     (pr-str x)))
          (map (fn [[package sym-pairs]]
+                [package
+                 (vec (sort-by (fn [[packge sym]]
+                                 (print-str sym))
+                               sym-pairs))]))
+         (map (fn [[package sym-pairs]]
                 (if (reader-conditional? package)
                   package
                   (apply (if (:import-square-brackets? opts)
