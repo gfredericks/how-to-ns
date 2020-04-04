@@ -233,7 +233,7 @@
     "(ns thomas
   \"docstring\"
   (:import
-   (java.io InputStream)
+   (java.io File InputStream)
    (java.util Random)))"}
 
    ;; unsorted imports
@@ -245,6 +245,15 @@
   (:import
    (java.util Random)
    (java.io InputStream)))"}
+
+   ;; unsorted imports classes
+   {:outcome :bad
+    :opts {}
+    :ns-str
+    "(ns thomas
+  \"docstring\"
+  (:import
+   (java.io InputStream File)))"}
 
    ;; sorted exclude
    {:outcome :good
@@ -384,8 +393,8 @@
     "(ns foo (:require #?(:clj foo :cljs bar) THING #?(:clj baz :cljs quux) OTHER))"
     "(ns foo\n  (:require\n   [OTHER]\n   [THING]\n   #?(:clj foo :cljs bar)\n   #?(:clj baz :cljs quux)))"
 
-    "(ns foo (:import (A2 a) (A1 b)))"
-    "(ns foo\n  (:import\n   (A1 b)\n   (A2 a)))"
+    "(ns foo (:import (A2 a b) (A1 b a)))"
+    "(ns foo\n  (:import\n   (A1 a b)\n   (A2 a b)))"
 
     "(ns foo (:import #?(:clj foo :cljs bar)))"
     "(ns foo\n  (:import\n   #?(:clj foo :cljs bar)))"
