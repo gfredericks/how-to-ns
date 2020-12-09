@@ -418,7 +418,22 @@
     "(ns foo\n  (:import\n   (Foo #?(:clj bar :cljs baz) d)))"
     
     "(ns foo #?(:clj (:import (A))))"
-    "(ns foo\n  #?(:clj (:import (A))))"))
+    "(ns foo\n  #?(:clj (:import (A))))"
+
+    "(ns foo (:require [bar :refer [b a]]))"
+    "(ns foo\n  (:require\n   [bar :refer [a b]]))"
+
+    "(ns foo (:require [bar :refer-macros [b a]]))"
+    "(ns foo\n  (:require\n   [bar :refer-macros [a b]]))"
+
+    "(ns foo (:require [bar #?(:clj :refer :cljs :refer-macros) [b a]]))"
+    "(ns foo\n  (:require\n   [bar #?(:clj :refer :cljs :refer-macros) [a b]]))"
+
+    "(ns foo (:require [bar #?(:cljs :refer-macros :clj :refer) [b a]]))"
+    "(ns foo\n  (:require\n   [bar #?(:cljs :refer-macros :clj :refer) [a b]]))"
+
+    "(ns foo (:require [bar :refer-macros [d c] :refer [b a]]))"
+    "(ns foo\n  (:require\n   [bar :refer [a b] :refer-macros [c d]]))"))
 
 (defspec judgment-unaffected-by-arbitrary-contents-following-ns-str 500
   (prop/for-all [{:keys [opts ns-str]} (gen/elements test-cases)
