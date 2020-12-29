@@ -423,6 +423,9 @@
     "(ns foo (:require [bar :refer [b a]]))"
     "(ns foo\n  (:require\n   [bar :refer [a b]]))"
 
+    "(ns foo (:require [bar :refer-macros :all]))"
+    "(ns foo\n  (:require\n   [bar :refer-macros [???]]))"
+
     "(ns foo (:require [bar :refer-macros [b a]]))"
     "(ns foo\n  (:require\n   [bar :refer-macros [a b]]))"
 

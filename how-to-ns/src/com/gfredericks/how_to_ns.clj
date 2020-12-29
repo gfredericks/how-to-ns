@@ -109,6 +109,10 @@
                                (update-when :refer maybe-placeholderize-all))
                              (cond-> no-refer-all?
                                (update-when :refer-macros maybe-placeholderize-all))
+                             (cond-> no-refer-all?
+                               (update-when (ReaderConditional/create '(:clj :refer :cljs :refer-macros) false) maybe-placeholderize-all))
+                             (cond-> no-refer-all?
+                               (update-when (ReaderConditional/create '(:cljs :refer-macros :clj :refer) false) maybe-placeholderize-all))
                              (update-when :refer sort-refers)
                              (update-when :refer-macros sort-refers)
                              (update-when (ReaderConditional/create '(:clj :refer :cljs :refer-macros) false) sort-refers)
