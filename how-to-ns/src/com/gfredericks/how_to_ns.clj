@@ -1,6 +1,7 @@
 (ns com.gfredericks.how-to-ns
   "Lint clojure ns forms."
   (:import
+   (clojure.lang ReaderConditional)
    (java.io PushbackReader StringReader)))
 
 (set! *warn-on-reflection* true)
@@ -92,19 +93,30 @@
                       [(join-symbols (first require-clause) x)]
                       (vec (cons (join-symbols (first require-clause) (first x))
                                  (rest x)))))
-                  [require-clause])]
+                  [require-clause])
+        no-refer-all? (not (:allow-refer-all? opts))
+        maybe-placeholderize-all #(if (= :all %) '[???] %)
+        sort-refers (fn [arg]
+                      (if (coll? arg)
+                        (vec (sort arg))
+                        arg))]
     (for [clause clauses
           :let [[ns-sym & kw-args] clause
                 map-args (-> (apply hash-map kw-args)
                              (cond-> (not (:allow-rename? opts))
                                (dissoc :rename))
-                             (cond-> (not (:allow-refer-all? opts))
-                               (update-when :refer #(if (= :all %) '[???] %)))
-                             (update-when :refer
-                                          (fn [arg]
-                                            (if (coll? arg)
-                                              (vec (sort arg))
-                                              arg))))]]
+                             (cond-> no-refer-all?
+                               (update-when :refer maybe-placeholderize-all))
+                             (cond-> no-refer-all?
+                               (update-when :refer-macros maybe-placeholderize-all))
+                             (cond-> no-refer-all?
+                               (update-when (ReaderConditional/create '(:clj :refer :cljs :refer-macros) false) maybe-placeholderize-all))
+                             (cond-> no-refer-all?
+                               (update-when (ReaderConditional/create '(:cljs :refer-macros :clj :refer) false) maybe-placeholderize-all))
+                             (update-when :refer sort-refers)
+                             (update-when :refer-macros sort-refers)
+                             (update-when (ReaderConditional/create '(:clj :refer :cljs :refer-macros) false) sort-refers)
+                             (update-when (ReaderConditional/create '(:cljs :refer-macros :clj :refer) false) sort-refers))]]
       (apply vector ns-sym
              (apply concat (sort map-args))))))
 
