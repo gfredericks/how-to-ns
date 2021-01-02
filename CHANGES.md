@@ -1,5 +1,9 @@
 # how-to-ns changelog
 
+## 0.2.8 2021-01-01
+
+[Adds support for :refer-macros](https://github.com/gfredericks/how-to-ns/pull/15)
+
 ## 0.2.7 2020-04-04
 
 - sorts the class names inside of import clauses

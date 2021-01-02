@@ -15,7 +15,7 @@ See the next two sections for respective maven coordinates.
 
 ## Leiningen Usage
 
-Add `[com.gfredericks/lein-how-to-ns "0.2.7"]` to the `:plugins` vector
+Add `[com.gfredericks/lein-how-to-ns "0.2.8"]` to the `:plugins` vector
 of your project.clj or `:user` profile.
 
 To lint the ns forms, printing diffs wherever there are problems:
@@ -30,7 +30,7 @@ lein how-to-ns fix
 
 ## Library Usage
 
-Maven coordinates: `[com.gfredericks/how-to-ns "0.2.7"]`
+Maven coordinates: `[com.gfredericks/how-to-ns "0.2.8"]`
 
 ``` clojure
 (require '[com.gfredericks.how-to-ns :as how-to-ns])
