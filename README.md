@@ -72,7 +72,7 @@ following options are available, shown here with their default values:
 
 ## License
 
-Copyright © 2016 Gary Fredericks
+Copyright © 2016-2021 Gary Fredericks
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
