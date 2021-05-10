@@ -14,7 +14,8 @@
    :allow-rename?                    false
    :align-clauses?                   false
    :import-square-brackets?          false
-   :sort-string-requires-to-end?     false})
+   :sort-string-requires-to-end?     false
+   :traditional-newline-style?       false})
 
 (defn parse-ns-form
   [[_ns-sym ns-name-sym & more]]
@@ -187,6 +188,7 @@
   [ns-form opts]
   (let [{:keys [ns doc refer-clojure require require-macros import reader-conditionals gen-class extra]}
         (parse-ns-form ns-form)
+        {:keys [traditional-newline-style?]} opts
         doc (or doc (if (:require-docstring? opts) "Perfunctory docstring."))
         ns-meta (meta ns)
         ns-meta-str (if ns-meta
@@ -223,7 +225,9 @@
             :let [clauses (normalize-fn (rest expr))]
             :when (seq clauses)]
 
-      (printf "\n  (:%s\n" name)
+      (printf "\n  (:%s%s" name (if traditional-newline-style?
+                                  ""
+                                  "\n"))
       (let [name-field-length (->> clauses
                                    (remove reader-conditional?)
                                    (map first)
@@ -245,12 +249,26 @@
                                  (if (vector? clause)
                                    (assoc clause 0 new-sym)
                                    (cons new-sym (rest clause))))
-                               clause))))]
-        (doseq [clause (butlast clauses)]
-          (print "   ")
-          (prn clause))
-        (print "   ")
-        (pr (last clauses))
+                               clause))))
+            sep (if traditional-newline-style?
+                  (->> " "
+                       (repeat (+ 5 (count name)))
+                       (apply str))
+                  "   ")]
+        (print (if traditional-newline-style?
+                 " "
+                 "   "))
+        ((if (-> clauses count (> 1))
+           prn
+           pr)
+         (first clauses))
+        (let [corpus (rest clauses)]
+          (doseq [[f clause] (partition 2 (interleave (concat (repeat (dec (count corpus))
+                                                                      prn)
+                                                              (list pr))
+                                                      corpus))]
+            (print sep)
+            (f clause)))
         (print ")")))
     (doseq [reader-conditional reader-conditionals]
       (print "\n  ")

@@ -61,7 +61,9 @@ following options are available, shown here with their default values:
  :allow-extra-clauses?             false
  :align-clauses?                   false
  :import-square-brackets?          false
- :place-string-requires-at-bottom? false}
+ :place-string-requires-at-bottom? false
+ ;; if `true`, doesn't place a newline after `(:require`:
+ :traditional-newline-style?       false}
 ```
 
 ## Things it doesn't do until somebody makes it do them

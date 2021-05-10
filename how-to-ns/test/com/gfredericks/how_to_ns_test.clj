@@ -438,6 +438,22 @@
     "(ns foo (:require [bar :refer-macros [d c] :refer [b a]]))"
     "(ns foo\n  (:require\n   [bar :refer [a b] :refer-macros [c d]]))"))
 
+(deftest traditional-newline-style
+  (are [input expected] (= expected
+                           (how-to-ns/format-ns-str input {:require-docstring? false
+                                                           :traditional-newline-style? true}))
+    "(ns foo (:require foo))"
+    "(ns foo\n  (:require [foo]))"
+
+    "(ns foo (:require foo bar))"
+    "(ns foo\n  (:require [bar]\n            [foo]))"
+    
+    "(ns foo (:require foo bar baz))"
+    "(ns foo\n  (:require [bar]\n            [baz]\n            [foo]))"
+
+    "(ns foo (:require foo bar baz) (:import (java.io File) (java.util UUID)))"
+    "(ns foo\n  (:require [bar]\n            [baz]\n            [foo])\n  (:import (java.io File)\n           (java.util UUID)))"))
+
 (defspec judgment-unaffected-by-arbitrary-contents-following-ns-str 500
   (prop/for-all [{:keys [opts ns-str]} (gen/elements test-cases)
                  aftergarbage gen/string]
