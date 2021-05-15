@@ -436,7 +436,22 @@
     "(ns foo\n  (:require\n   [bar #?(:cljs :refer-macros :clj :refer) [a b]]))"
 
     "(ns foo (:require [bar :refer-macros [d c] :refer [b a]]))"
-    "(ns foo\n  (:require\n   [bar :refer [a b] :refer-macros [c d]]))"))
+    "(ns foo\n  (:require\n   [bar :refer [a b] :refer-macros [c d]]))"
+
+    "(ns foo {:doc \"I should be double-quoted\"})"
+    "(ns foo\n  {:doc \"I should be double-quoted\"})"
+
+    "(ns foo {:doc \"I should be double-quoted\"} (:require a))"
+    "(ns foo\n  {:doc \"I should be double-quoted\"}\n  (:require\n   [a]))"
+
+    "(ns foo \"The docstring\" {:additional 42} (:require a))"
+    "(ns foo\n  \"The docstring\"\n  {:additional 42}\n  (:require\n   [a]))"
+
+    "(ns foo {:doc \"I should be double-quoted\" :e :second})"
+    "(ns foo\n  {:doc \"I should be double-quoted\"\n   :e :second})"
+    
+    "(ns foo {:doc \"I should be double-quoted\" :e :second :f 3})"
+    "(ns foo\n  {:doc \"I should be double-quoted\"\n   :e :second\n   :f 3})"))
 
 (defspec judgment-unaffected-by-arbitrary-contents-following-ns-str 500
   (prop/for-all [{:keys [opts ns-str]} (gen/elements test-cases)

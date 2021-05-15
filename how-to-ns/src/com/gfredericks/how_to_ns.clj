@@ -1,5 +1,8 @@
 (ns com.gfredericks.how-to-ns
   "Lint clojure ns forms."
+  (:require
+   [clojure.pprint :as pprint]
+   [clojure.string :as string])
   (:import
    (clojure.lang ReaderConditional)
    (java.io PushbackReader StringReader)))
@@ -24,10 +27,12 @@
         things (group-by (fn [x]
                            (cond
                              (seq? x) (first x)
-                             (reader-conditional? x) :reader-conditionals))
+                             (reader-conditional? x) :reader-conditionals
+                             (map? x) :attr-map))
                          more)]
     {:ns ns-name-sym
      :doc doc
+     :attr-map (first (get things :attr-map))
      :refer-clojure (first (things :refer-clojure))
      :require (first (things :require))
      :require-macros (first (things :require-macros))
@@ -185,7 +190,7 @@
 
 (defn print-ns-form
   [ns-form opts]
-  (let [{:keys [ns doc refer-clojure require require-macros import reader-conditionals gen-class extra]}
+  (let [{:keys [ns doc refer-clojure require require-macros import reader-conditionals gen-class extra attr-map]}
         (parse-ns-form ns-form)
         doc (or doc (if (:require-docstring? opts) "Perfunctory docstring."))
         ns-meta (meta ns)
@@ -207,6 +212,24 @@
     (when doc
       (print "\n  ")
       (print-string-with-line-breaks doc))
+    (when attr-map
+      (let [m (-> (with-out-str ;; By binding `pprint/*print-miser-width*`,
+                    ;; One makes a reasonable (but limited) effort at keeping the input as-is
+                    ;; by preventing the insertion of overly frequent newlines:
+                    (binding [pprint/*print-miser-width* 300]
+                      (pprint/pprint attr-map)))
+                  (string/replace #"\n$" ""))
+            clean (->> m
+                       (string/split-lines)
+                       (map (fn [s]
+                              (-> s
+                                  (string/replace #",$" "")
+                                  (string/replace #"," "\n  ")
+                                  (string/replace #"^\s+" "   ")
+                                  (string/replace #"^\s+\{" "  {"))))
+                       (string/join "\n"))]
+        (print "\n  ")
+        (print clean)))
     (when refer-clojure
       (print "\n  ")
       (pr (normalize-refer-clojure refer-clojure)))
