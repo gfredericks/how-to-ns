@@ -5,5 +5,5 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :eval-in-leiningen true
   :vcs :git
-  :dependencies [[com.gfredericks/how-to-ns "0.2.8"]]
+  :dependencies [[com.gfredericks/how-to-ns "0.2.9"]]
   :deploy-repositories [["releases" :clojars]])
