@@ -1,5 +1,10 @@
 # how-to-ns changelog
 
+## 0.2.9 2021-05-17
+
+- [Adds support for attr maps](https://github.com/gfredericks/how-to-ns/pull/16)
+- [Adds the `:traditional-newline-style?` option](https://github.com/gfredericks/how-to-ns/pull/17)
+
 ## 0.2.8 2021-01-01
 
 [Adds support for :refer-macros](https://github.com/gfredericks/how-to-ns/pull/15)
