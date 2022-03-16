@@ -469,6 +469,11 @@
     "(ns foo (:require foo bar baz) (:import (java.io File) (java.util UUID)))"
     "(ns foo\n  (:require [bar]\n            [baz]\n            [foo])\n  (:import (java.io File)\n           (java.util UUID)))"))
 
+(deftest as-alias
+  (let [v "(ns foo\n  (:require\n   [foo :as-alias f]))"]
+    (is (= v
+           (how-to-ns/format-ns-str v {:require-docstring? false})))))
+
 (defspec judgment-unaffected-by-arbitrary-contents-following-ns-str 500
   (prop/for-all [{:keys [opts ns-str]} (gen/elements test-cases)
                  aftergarbage gen/string]
