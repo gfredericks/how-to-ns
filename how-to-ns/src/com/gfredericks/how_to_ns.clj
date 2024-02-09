@@ -18,7 +18,8 @@
    :align-clauses?                   false
    :import-square-brackets?          false
    :sort-string-requires-to-end?     false
-   :traditional-newline-style?       false})
+   :traditional-newline-style?       false
+   :cursive-indentation?             false})
 
 (defn parse-ns-form
   [[_ns-sym ns-name-sym & more]]
@@ -193,7 +194,7 @@
   [ns-form opts]
   (let [{:keys [ns doc refer-clojure require require-macros import reader-conditionals gen-class extra attr-map]}
         (parse-ns-form ns-form)
-        {:keys [traditional-newline-style?]} opts
+        {:keys [traditional-newline-style? cursive-indentation?]} opts
         doc (or doc (if (:require-docstring? opts) "Perfunctory docstring."))
         ns-meta (meta ns)
         ns-meta-str (if ns-meta
@@ -277,10 +278,14 @@
                   (->> " "
                        (repeat (+ 5 (count name)))
                        (apply str))
-                  "   ")]
+                  (if cursive-indentation?
+                    "    "
+                    "   "))]
         (print (if traditional-newline-style?
                  " "
-                 "   "))
+                 (if cursive-indentation?
+                   "    "
+                   "   ")))
         ((if (-> clauses count (> 1))
            prn
            pr)
