@@ -63,7 +63,10 @@ following options are available, shown here with their default values:
  :import-square-brackets?          false
  :place-string-requires-at-bottom? false
  ;; if `true`, doesn't place a newline after `(:require`:
- :traditional-newline-style?       false}
+ :traditional-newline-style?       false
+ ;; if `true` make `(:require\n  <add-one-more-space-symbol-here>[clojure.string :as ...`
+ ;; This option only has effect with `:traditional-newline-style?` set to false
+ :cursive-indentation?             false}
 ```
 
 ## Things it doesn't do until somebody makes it do them

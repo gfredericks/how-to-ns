@@ -469,6 +469,33 @@
     "(ns foo (:require foo bar baz) (:import (java.io File) (java.util UUID)))"
     "(ns foo\n  (:require [bar]\n            [baz]\n            [foo])\n  (:import (java.io File)\n           (java.util UUID)))"))
 
+(deftest cursive-indentation
+  (are [input expected] (= expected
+                           (how-to-ns/format-ns-str input {:require-docstring? false
+                                                           :cursive-indentation? true}))
+    "(ns foo (:require foo))"
+    "(ns foo\n  (:require\n    [foo]))"
+
+    "(ns foo (:require foo bar))"
+    "(ns foo\n  (:require\n    [bar]\n    [foo]))"
+
+    "(ns foo (:require foo bar baz))"
+    "(ns foo\n  (:require\n    [bar]\n    [baz]\n    [foo]))"
+
+    "(ns foo (:require foo bar baz) (:import (java.io File) (java.util UUID)))"
+    "(ns foo\n  (:require\n    [bar]\n    [baz]\n    [foo])\n  (:import\n    (java.io File)\n    (java.util UUID)))")
+
+  (are [input expected] (= expected
+                           (how-to-ns/format-ns-str input {:require-docstring? false
+                                                           :traditional-newline-style? true
+                                                           :cursive-indentation? true}))
+
+    "(ns foo (:require foo bar baz))"
+    "(ns foo\n  (:require [bar]\n            [baz]\n            [foo]))"
+
+    "(ns foo (:require foo bar baz) (:import (java.io File) (java.util UUID)))"
+    "(ns foo\n  (:require [bar]\n            [baz]\n            [foo])\n  (:import (java.io File)\n           (java.util UUID)))"))
+
 (deftest as-alias
   (let [v "(ns foo\n  (:require\n   [foo :as-alias f]))"]
     (is (= v
