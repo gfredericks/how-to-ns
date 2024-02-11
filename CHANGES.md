@@ -1,5 +1,9 @@
 # how-to-ns changelog
 
+## 0.2.10 2024-02-11
+
+- [Adds support for cursive-style indetation via the `cursive-indentation?` option](https://github.com/gfredericks/how-to-ns/pull/21)
+
 ## 0.2.9 2021-05-17
 
 - [Adds support for attr maps](https://github.com/gfredericks/how-to-ns/pull/16)
