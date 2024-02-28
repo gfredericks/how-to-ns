@@ -1,6 +1,6 @@
 (ns com.gfredericks.tool
   (:require
-   [com.gfredericks.how-to-ns :as how-to-ns]
+   [com.gfredericks.config :as config]
    [com.gfredericks.how-to-ns.main :as main]))
 
 (def default-paths
@@ -9,7 +9,7 @@
 (defn apply-check-or-fix-fn
   [check-or-fix-fn options]
   (let [paths (or (:paths options) default-paths)
-        opts (merge how-to-ns/default-opts options)]
+        opts (merge (config/load-config) options)]
     (check-or-fix-fn paths opts)))
 
 (defn check
