@@ -58,6 +58,7 @@
   [paths opts]
   (->> (all-clojure-files paths)
        (map (fn [file]
+              (println "Check file => " (.getName file))
               (try
                 (let [contents (slurp file)
                       formatted (how-to-ns/format-initial-ns-str contents opts)]
