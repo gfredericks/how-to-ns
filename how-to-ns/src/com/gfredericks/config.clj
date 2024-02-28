@@ -56,5 +56,6 @@
    (let [path (if (directory? path)
                 (find-config-file path)
                 path)]
+     (println "config-path => " path)
      (->> (some-> path read-config)
           (merge how-to-ns/default-opts)))))

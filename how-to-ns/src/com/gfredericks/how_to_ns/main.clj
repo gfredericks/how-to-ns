@@ -33,6 +33,7 @@
 
 (defn ^:private all-clojure-files
   [paths]
+  (println "paths => " (mapcat #(file-seq (File. ^String %)) paths))
   (->> paths
        (mapcat #(file-seq (File. ^String %)))
        (filter #(.isFile ^File %))
@@ -58,7 +59,6 @@
   [paths opts]
   (->> (all-clojure-files paths)
        (map (fn [file]
-              (println "Check file => " (.getName file))
               (try
                 (let [contents (slurp file)
                       formatted (how-to-ns/format-initial-ns-str contents opts)]
