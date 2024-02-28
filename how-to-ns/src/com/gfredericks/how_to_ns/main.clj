@@ -2,7 +2,8 @@
   (:require
    [clojure.java.io           :as io]
    [clojure.string            :as str]
-   [com.gfredericks.how-to-ns :as how-to-ns])
+   [com.gfredericks.how-to-ns :as how-to-ns]
+   [babashka.fs :as fs])
   (:import
    [difflib DiffUtils Delta$TYPE]
    (java.io File)))
@@ -33,8 +34,9 @@
 
 (defn ^:private all-clojure-files
   [paths]
-  (println "paths => " (mapcat #(file-seq (File. ^String %)) paths))
-  (->> paths
+  (println "paths => " (map str (fs/glob "." "**{.clj,cljs,cljc}")))
+  (map str (fs/glob "." "**{.clj,cljs,cljc}"))
+  #_(->> paths
        (mapcat #(file-seq (File. ^String %)))
        (filter #(.isFile ^File %))
        (filter #(re-matches #".*\.clj[sc]?" (.getName ^File %)))))
