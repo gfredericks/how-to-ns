@@ -32,9 +32,22 @@
              (DiffUtils/diff (lines original) (lines revised))
              context))))
 
+(defn find-files-recursively
+  ([dir] (find-files-recursively dir #".*"))
+  ([dir regex]
+   (letfn [(recurse-dir [f]
+             (concat
+              (when (.isDirectory f)
+                (mapcat recurse-dir (.listFiles f)))
+              (when (.isFile f)
+                (when (re-matches (re-pattern regex) (.getName f))
+                  [f]))))]
+     (recurse-dir (io/file dir)))))
+
 (defn ^:private all-clojure-files
   [paths]
-  (println "paths => " (map str (fs/glob "." "**{.clj,cljs,cljc}")))
+  (println "paths => " (find-files-recursively "."))
+  (println "gpaths =>" (.listFiles (io/file "./src/granny")))
   (map str (fs/glob "." "**{.clj,cljs,cljc}"))
   #_(->> paths
        (mapcat #(file-seq (File. ^String %)))
