@@ -39,7 +39,10 @@
   - `how-to-ns.edn`
   - `how-to-ns.clj`"
   ([] (find-config-file ""))
-  ([path] (some->> (parent-dirs path) (some find-config-file-in-dir))))
+  ([path]
+   (println "root-path => " (.getAbsoluteFile (io/file "")))
+   (println "root-path. => " (.getAbsoluteFile (io/file ".")))
+   (some->> (parent-dirs path) (some find-config-file-in-dir))))
 
 (defn- directory? [path]
   (some-> path io/file .getAbsoluteFile .isDirectory))
