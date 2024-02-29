@@ -23,5 +23,5 @@
   (apply-check-or-fix-fn main/fix options))
 
 (defn deps
-  []
+  [_]
   (println "dependencies loaded"))
