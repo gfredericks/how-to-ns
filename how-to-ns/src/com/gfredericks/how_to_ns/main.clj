@@ -50,8 +50,8 @@
   (println "gpaths => " (.listFiles (io/file "./src/granny")))
   (println "cwd => " (fs/cwd))
   (println "ls => " (fs/list-dir (fs/cwd)))
-  (println "ls src => " (fs/list-dir (fs/file "./src")))
-  (println "ls src2 => " (fs/list-dir (fs/file "./src/granny")))
+  (println "ls src => " (fs/list-dir (io/file "./src")))
+  (println "ls src2 => " (fs/list-dir (io/file "./src/granny")))
   (->> paths
        (mapcat #(file-seq (File. ^String %)))
        (filter #(.isFile ^File %))
