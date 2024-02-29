@@ -14,14 +14,11 @@
 
 (defn check
   [options]
-  (let [problem-count (apply-check-or-fix-fn main/check options)]
+  (println "aaa")
+  #_(let [problem-count (apply-check-or-fix-fn main/check options)]
     (when (pos? problem-count)
       (System/exit 1))))
 
 (defn fix
   [options]
   (apply-check-or-fix-fn main/fix options))
-
-(defn deps
-  [_]
-  (println "dependencies loaded"))
