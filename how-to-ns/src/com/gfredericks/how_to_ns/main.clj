@@ -46,14 +46,16 @@
 
 (defn ^:private all-clojure-files
   [paths]
-  (println "paths => " (find-files-recursively "."))
-  (println "gpaths => " (.listFiles (io/file "./src/granny")))
-  (println "cwd => " (fs/cwd))
-  (println "ls => " (fs/list-dir (fs/cwd)))
-  (->> paths
+  (println "paths => " (map str (fs/glob "." "**{.clj}")))
+  ;; (println "paths => " (find-files-recursively "."))
+  ;; (println "gpaths => " (.listFiles (io/file "./src/granny")))
+  ;; (println "cwd => " (fs/cwd))
+  ;; (println "ls => " (fs/list-dir (fs/cwd)))
+  #_(->> paths
        (mapcat #(file-seq (File. ^String %)))
        (filter #(.isFile ^File %))
-       (filter #(re-matches #".*\.clj[sc]?" (.getName ^File %)))))
+       (filter #(re-matches #".*\.clj[sc]?" (.getName ^File %))))
+  [])
 
 (defn ^:private report-file-specific-exception
   [file ^Exception e]
