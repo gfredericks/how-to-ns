@@ -48,8 +48,8 @@
   [paths]
   (println "paths => " (find-files-recursively "."))
   (println "gpaths => " (.listFiles (io/file "./src/granny")))
-  (map str (fs/glob "." "**{.clj,cljs,cljc}"))
-  #_(->> paths
+  (println "cwd => " (fs/cwd))
+  (->> paths
        (mapcat #(file-seq (File. ^String %)))
        (filter #(.isFile ^File %))
        (filter #(re-matches #".*\.clj[sc]?" (.getName ^File %)))))
