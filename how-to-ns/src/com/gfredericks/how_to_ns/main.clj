@@ -46,7 +46,7 @@
 
 (defn ^:private all-clojure-files
   [paths]
-  (println "paths => " (mapcat #(file-seq (File. ^String %)) paths))
+  (println "paths111 => " (mapcat #(file-seq (File. ^String %)) paths))
   (->> paths
        (mapcat #(file-seq (File. ^String %)))
        (filter #(.isFile ^File %))
