@@ -49,6 +49,9 @@
   (println "paths => " (find-files-recursively "."))
   (println "gpaths => " (.listFiles (io/file "./src/granny")))
   (println "cwd => " (fs/cwd))
+  (println "ls => " (fs/list-dir (fs/cwd)))
+  (println "ls src => " (fs/list-dir "./src"))
+  (println "ls src2 => " (fs/list-dir "./src/granny"))
   (->> paths
        (mapcat #(file-seq (File. ^String %)))
        (filter #(.isFile ^File %))
