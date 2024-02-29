@@ -14,8 +14,7 @@
 
 (defn check
   [options]
-  (println "aaa")
-  #_(let [problem-count (apply-check-or-fix-fn main/check options)]
+  (let [problem-count (apply-check-or-fix-fn main/check options)]
     (when (pos? problem-count)
       (System/exit 1))))
 
