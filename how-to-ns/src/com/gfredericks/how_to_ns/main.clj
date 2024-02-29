@@ -46,6 +46,8 @@
 
 (defn ^:private all-clojure-files
   [paths]
+  (println "root => " (fs/cwd))
+  (println "p => " (map str (fs/glob "." "**{.clj,cljc}")))
   (println "paths111 => " (mapcat #(file-seq (File. ^String %)) paths))
   (->> paths
        (mapcat #(file-seq (File. ^String %)))
