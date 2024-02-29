@@ -47,7 +47,7 @@
 (defn ^:private all-clojure-files
   [paths]
   (println "paths => " (find-files-recursively "."))
-  (println "gpaths =>" (.listFiles (io/file "./src/granny")))
+  (println "gpaths => " (.listFiles (io/file "./src/granny")))
   (map str (fs/glob "." "**{.clj,cljs,cljc}"))
   #_(->> paths
        (mapcat #(file-seq (File. ^String %)))
