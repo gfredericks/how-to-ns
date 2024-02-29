@@ -40,8 +40,6 @@
   - `how-to-ns.clj`"
   ([] (find-config-file ""))
   ([path]
-   (println "root-path => " (.getAbsoluteFile (io/file "")))
-   (println "root-path. => " (.getAbsoluteFile (io/file ".")))
    (some->> (parent-dirs path) (some find-config-file-in-dir))))
 
 (defn- directory? [path]
@@ -56,6 +54,5 @@
    (let [path (if (directory? path)
                 (find-config-file path)
                 path)]
-     (println "config-path => " path)
      (->> (some-> path read-config)
           (merge how-to-ns/default-opts)))))
