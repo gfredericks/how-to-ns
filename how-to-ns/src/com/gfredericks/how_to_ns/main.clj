@@ -52,8 +52,7 @@
   (->> paths
        (mapcat #(file-seq (File. ^String %)))
        (filter #(.isFile ^File %))
-       (filter #(re-matches #".*\.clj[sc]?" (.getName ^File %))))
-  [])
+       (filter #(re-matches #".*\.clj[sc]?" (.getName ^File %)))))
 
 (defn ^:private report-file-specific-exception
   [file ^Exception e]
