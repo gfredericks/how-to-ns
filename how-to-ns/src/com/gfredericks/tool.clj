@@ -15,8 +15,9 @@
 (defn check
   [options]
   (let [problem-count (apply-check-or-fix-fn main/check options)]
-    (when (pos? problem-count)
-      (System/exit 1))))
+    (if (pos? problem-count)
+      (System/exit 1)
+      (println "Checks passed"))))
 
 (defn fix
   [options]

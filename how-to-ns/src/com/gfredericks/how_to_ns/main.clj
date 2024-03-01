@@ -2,8 +2,7 @@
   (:require
    [clojure.java.io           :as io]
    [clojure.string            :as str]
-   [com.gfredericks.how-to-ns :as how-to-ns]
-   [babashka.fs :as fs])
+   [com.gfredericks.how-to-ns :as how-to-ns])
   (:import
    [difflib DiffUtils Delta$TYPE]
    (java.io File)))
@@ -32,23 +31,8 @@
              (DiffUtils/diff (lines original) (lines revised))
              context))))
 
-(defn find-files-recursively
-  ([dir] (find-files-recursively dir #".*"))
-  ([dir regex]
-   (letfn [(recurse-dir [f]
-             (concat
-              (when (.isDirectory f)
-                (mapcat recurse-dir (.listFiles f)))
-              (when (.isFile f)
-                (when (re-matches (re-pattern regex) (.getName f))
-                  [f]))))]
-     (recurse-dir (io/file dir)))))
-
 (defn ^:private all-clojure-files
   [paths]
-  (println "root => " (fs/cwd))
-  (println "p => " (map str (fs/glob "." "**{.clj,cljc}")))
-  (println "paths111 => " (mapcat #(file-seq (File. ^String %)) paths))
   (->> paths
        (mapcat #(file-seq (File. ^String %)))
        (filter #(.isFile ^File %))
