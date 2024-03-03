@@ -1,5 +1,9 @@
 # how-to-ns changelog
 
+## 0.2.11 2024-03-03
+
+- [clojure.tools support](https://github.com/gfredericks/how-to-ns/pull/22)
+
 ## 0.2.10 2024-02-11
 
 - [Adds support for cursive-style indetation via the `cursive-indentation?` option](https://github.com/gfredericks/how-to-ns/pull/21)
