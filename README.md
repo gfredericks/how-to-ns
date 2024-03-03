@@ -13,9 +13,11 @@ library `how-to-ns` and the leiningen plugin `lein-how-to-ns`.
 
 See the next two sections for respective maven coordinates.
 
-## Leiningen Usage
+## Usage
 
-Add `[com.gfredericks/lein-how-to-ns "0.2.10"]` to the `:plugins` vector
+### Leiningen
+
+Add `[com.gfredericks/lein-how-to-ns "0.2.11"]` to the `:plugins` vector
 of your project.clj or `:user` profile.
 
 To lint the ns forms, printing diffs wherever there are problems:
@@ -28,9 +30,41 @@ To fix the ns forms that don't pass the linter:
 lein how-to-ns fix
 ```
 
-## Library Usage
+### Clojure Tools
 
-    Maven coordinates: `[com.gfredericks/how-to-ns "0.2.10"]`
+The official Clojure CLI supports installation of thirdparty [tools][].
+To install cljfmt as a tool, run:
+
+```bash
+clj -Ttools install com.gfredericks/how-to-ns '{:git/tag "how-to-ns-0.2.11"}' :as how-to-ns
+```
+
+To use the tool to check for formatting errors in your project, run:
+
+```bash
+clj -Thow-to-ns check
+;; or with options
+clj -Thow-to-ns check '{:paths ["src" "test"] :require-docstring? false}'
+```
+
+And to fix those errors:
+
+```bash
+clj -Thow-to-ns fix
+;; or with options
+clj -Thow-to-ns fix '{:paths ["src" "test"] :require-docstring? false}'
+```
+
+**NOTE!** The default value for `:paths` is `["src" "test"]`.
+Other defaults are explained in the Customization section below.
+
+[tools]: https://clojure.org/reference/deps_and_cli#tool_install
+
+
+
+### Library
+
+    Maven coordinates: `[com.gfredericks/how-to-ns "0.2.11"]`
 
 ``` clojure
 (require '[com.gfredericks.how-to-ns :as how-to-ns])

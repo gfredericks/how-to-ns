@@ -1,0 +1,7 @@
+{:tools/usage {:ns-default com.gfredericks.tool}
+ :paths ["how-to-ns/src"]
+
+ :deps
+ {org.clojure/tools.deps {:mvn/version "0.16.1264"}
+  org.clojure/tools.cli {:mvn/version "1.0.214"}
+  com.googlecode.java-diff-utils/diffutils {:mvn/version "1.2.1"}}}
