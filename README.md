@@ -17,7 +17,7 @@ See the next two sections for respective maven coordinates.
 
 ### Leiningen
 
-Add `[com.gfredericks/lein-how-to-ns "0.2.11"]` to the `:plugins` vector
+Add `[com.gfredericks/lein-how-to-ns "0.2.12"]` to the `:plugins` vector
 of your project.clj or `:user` profile.
 
 To lint the ns forms, printing diffs wherever there are problems:
@@ -36,7 +36,7 @@ The official Clojure CLI supports installation of thirdparty [tools][].
 To install cljfmt as a tool, run:
 
 ```bash
-clj -Ttools install com.gfredericks/how-to-ns '{:git/tag "how-to-ns-0.2.11"}' :as how-to-ns
+clj -Ttools install com.gfredericks/how-to-ns '{:git/tag "how-to-ns-0.2.12"}' :as how-to-ns
 ```
 
 To use the tool to check for formatting errors in your project, run:
@@ -64,7 +64,7 @@ Other defaults are explained in the Customization section below.
 
 ### Library
 
-    Maven coordinates: `[com.gfredericks/how-to-ns "0.2.11"]`
+    Maven coordinates: `[com.gfredericks/how-to-ns "0.2.12"]`
 
 ``` clojure
 (require '[com.gfredericks.how-to-ns :as how-to-ns])

@@ -1,5 +1,9 @@
 # how-to-ns changelog
 
+## 0.2.12 2024-03-09
+
+- [add config file support](https://github.com/gfredericks/how-to-ns/pull/23)
+
 ## 0.2.11 2024-03-03
 
 - [clojure.tools support](https://github.com/gfredericks/how-to-ns/pull/22)
