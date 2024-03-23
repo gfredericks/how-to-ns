@@ -36,7 +36,7 @@ The official Clojure CLI supports installation of thirdparty [tools][].
 To install cljfmt as a tool, run:
 
 ```bash
-clj -Ttools install com.gfredericks/how-to-ns '{:git/tag "how-to-ns-0.2.12"}' :as how-to-ns
+clojure -Ttools install com.gfredericks/how-to-ns '{:git/url "https://github.com/gfredericks/how-to-ns.git" :git/tag "how-to-ns-0.2.12"}' :as how-to-ns
 ```
 
 To use the tool to check for formatting errors in your project, run:
